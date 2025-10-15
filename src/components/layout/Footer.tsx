@@ -1,4 +1,3 @@
-import { FaMoon } from "react-icons/fa";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 export default function Footer() {

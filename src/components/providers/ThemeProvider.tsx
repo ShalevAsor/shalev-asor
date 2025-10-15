@@ -1,6 +1,6 @@
 "use client";
-
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useTransition } from "react";
+import { setTheme as setThemeCookie } from "@/actions/theme";
 
 type Theme = "light" | "dark";
 
@@ -11,26 +11,25 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-
-  useEffect(() => {
-    // Get theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle(
-        "light",
-        savedTheme === "light"
-      );
-    }
-  }, []);
+export function ThemeProvider({
+  children,
+  defaultTheme,
+}: {
+  children: React.ReactNode;
+  defaultTheme: Theme;
+}) {
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [, startTransition] = useTransition();
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
     document.documentElement.classList.toggle("light", newTheme === "light");
+
+    // Save to cookie
+    startTransition(async () => {
+      await setThemeCookie(newTheme);
+    });
   };
 
   return (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { FaBeer, FaSearch, FaMoon, FaBars, FaSun } from "react-icons/fa";
+import { FaBeer, FaSearch, FaBars } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
 import { ThemeToggleButton } from "./ThemeToggleButton";
