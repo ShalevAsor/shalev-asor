@@ -36,8 +36,16 @@ export const ThemeToggleButton: React.FC = () => {
 
       {/* Background icons */}
       <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
-        <FaMoon className="text-muted-foreground text-xs opacity-50 " />
-        <FaSun className="text-muted-foreground text-xs opacity-50" />
+        <FaMoon
+          className={`${
+            isDark ? "text-muted-foreground" : "text-ring"
+          } text-xs opacity-50`}
+        />
+        <FaSun
+          className={`${
+            isDark ? "text-ring" : "text-muted-foreground"
+          } text-xs opacity-50`}
+        />
       </div>
     </button>
   );

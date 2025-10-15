@@ -10,7 +10,11 @@ export default function MainLayout({
     // to columns layout
     <div className="flex flex-col h-screen">
       <Navbar />
-      <main className="flex-1 overflow-auto">{children}</main> <Footer />
+      <main className="flex-1 overflow-auto">
+        {children}
+
+        <Footer />
+      </main>
     </div>
   );
 }

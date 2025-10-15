@@ -1,0 +1,76 @@
+---
+title: "TaleByYou"
+slug: "talebyyou"
+description: "AI-powered platform for creating personalized children's books with paying customers"
+date: "2024-01-15"
+published: true
+featured: true
+tags: ["nextjs", "typescript", "react", "fastapi", "python", "ai"]
+github: "https://github.com/yourusername/talebyyou"
+demo: "https://talebyyou.com"
+image: ../../../public/images/profile/shalev.jpg
+---
+
+## Overview
+
+TaleByYou is an AI-powered platform that creates personalized children's books. The platform allows parents to generate custom stories featuring their children as the main characters, with beautiful illustrations and engaging narratives.
+
+### Key Features
+
+- **AI-Powered Story Generation** - Uses advanced language models to create unique, engaging stories
+- **Custom Illustrations** - Generates beautiful artwork tailored to each story
+- **Personalization** - Children become the heroes of their own adventures
+- **Print-Ready Format** - Professional-quality books ready for printing
+- **Payment Integration** - Full e-commerce functionality with Stripe
+
+## Technical Architecture
+
+The application is built with a modern full-stack architecture:
+
+```typescript
+// Example: API route for story generation
+export async function POST(req: Request) {
+  const { childName, theme, ageGroup } = await req.json();
+
+  const story = await generateStory({
+    name: childName,
+    theme,
+    age: ageGroup,
+  });
+
+  return Response.json({ story });
+}
+```
+
+### Tech Stack
+
+- **Frontend**: Next.js 14, TypeScript, React, Tailwind CSS
+- **Backend**: FastAPI, Python
+- **AI/ML**: OpenAI GPT-4, DALL-E for illustrations
+- **Database**: PostgreSQL with Prisma ORM
+- **Payments**: Stripe
+- **Hosting**: Vercel (Frontend), Railway (Backend)
+
+## Challenges & Solutions
+
+### Challenge 1: Story Consistency
+
+Maintaining character consistency across multiple pages was challenging. Solved by implementing a character profile system that tracks attributes throughout the story.
+
+### Challenge 2: Image Generation
+
+Ensuring illustrations matched the narrative required careful prompt engineering and multiple iterations with the AI model.
+
+## Learning Experience
+
+- Built production-grade AI integration
+- Implemented complex payment flows
+- Managed full-stack deployment
+- Handled real customer feedback and iteration
+
+## Results
+
+- **Active Users**: 500+ registered users
+- **Books Created**: 1,200+ personalized books
+- **Revenue**: Generating consistent monthly revenue
+- **Customer Satisfaction**: 4.8/5 star rating
