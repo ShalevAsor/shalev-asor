@@ -2,13 +2,22 @@ import Link from "next/link";
 import { Project } from "../../../.velite";
 interface ProjectsIndexProps {
   projects: Project[];
+  isSticky?: boolean;
 }
 // backdrop-blur nav -> div
-export default function ProjectsIndex({ projects }: ProjectsIndexProps) {
+
+export default function ProjectsIndex({
+  projects,
+  isSticky = true,
+}: ProjectsIndexProps) {
   return (
     <aside className="hidden lg:block shrink-0">
-      <nav className="sticky top-40">
-        <div className="border-2 border-primary rounded-lg p-4 bg-card/50 backdrop-blur">
+      <nav className={`${isSticky ? "sticky top-40" : ""}`}>
+        <div
+          className={`${
+            isSticky ? "border-2 bg-card/50" : ""
+          }  border-primary rounded-lg p-4  backdrop-blur`}
+        >
           <h3 className="text-sm uppercase tracking-wider text-muted-foreground mb-4 font-semibold">
             Index
           </h3>

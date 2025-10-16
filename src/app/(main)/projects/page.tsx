@@ -29,7 +29,7 @@ export default function ProjectsPage() {
           {/* Main Content */}
           <div className="flex-1 min-w-0">
             {/* Header with Title and Counter */}
-            <div className="flex items-end justify-between mb-12 pb-6 border-b border-border">
+            <div className="flex items-end justify-between mb-12 pb-6 ">
               <div>
                 <h1 className="text-5xl md:text-6xl font-bold">Projects</h1>
                 <p className="text-muted-foreground mt-2">

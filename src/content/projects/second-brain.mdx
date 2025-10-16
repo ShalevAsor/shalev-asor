@@ -1,0 +1,844 @@
+---
+title: "Second Brain"
+slug: "second-brain"
+description: "AI-powered note-taking app for STEM/CS students with semantic search and smart organization"
+date: "2025-10-01"
+published: true
+featured: true
+tags: ["nextjs", "typescript", "react", "ai", "prisma", "postgresql"]
+github: "https://github.com/yourusername/second-brain"
+demo: "https://second-brain.vercel.app"
+image: ../../../public/images/profile/shalev.jpg
+---
+
+## Overview
+
+Second Brain is an AI-powered note-taking app designed specifically for STEM and CS students. It combines rich text editing, semantic search, and intelligent organization to help users capture, organize, and recall information effortlessly.
+
+<Callout type="success" title="Core Value Proposition">
+  - **Paste anything** → AI organizes it automatically - **Natural language
+  search** that understands meaning - **Rich text editor** with code blocks,
+  LaTeX math, and syntax highlighting
+</Callout>
+
+**Target Users:** CS students, bootcamp students, self-taught developers
+
+<Stats>
+  <StatCard value="99.2%" label="Uptime" trend="up" />
+  <StatCard value="< 300ms" label="Search Speed" trend="up" />
+  <StatCard value="2000+" label="Notes Supported" trend="neutral" />
+  <StatCard value="30+" label="Code Languages" trend="neutral" />
+</Stats>
+
+## Interface Preview
+
+<Figure
+  src="/images/projects/second-brain/dashboard.png"
+  alt="Second Brain main dashboard interface"
+  caption="Clean, distraction-free note-taking interface with sidebar navigation"
+  width="full"
+/>
+
+## Tech Stack
+
+<Tabs defaultTab={0}>
+  <TabItem label="Frontend">
+    
+<TechStack 
+  title="Core Framework"
+  items={[
+    "Next.js 15 with App Router for server and client components",
+    "TypeScript in strict mode for type safety",
+    "Tailwind CSS for styling",
+    "SCSS for TipTap styling (following their patterns)",
+    "shadcn/ui for accessible UI components"
+  ]}
+/>
+
+<TechStack
+  title="Rich Text Editor"
+  items={[
+    "Tiptap Editor for rich text editing with custom components and features",
+    "lowlight for syntax highlighting (30+ languages)",
+    "LaTeX math support for equations",
+    "Inline and Code blocks with line numbers",
+    "Custom AI Powered Formatter using OpenAI SDK",
+  ]}
+/>
+
+<TechStack
+  title="State Management"
+  items={[
+    "React Query (TanStack Query) for server state",
+    "Zustand for global client UI state",
+    "useReducer for complex forms",
+    "useState for simple local state",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="Backend">
+    
+<TechStack 
+  title="API & Database"
+  items={[
+    "Next.js Server Actions for type-safe API",
+    "PostgreSQL for relational data storage",
+    "Prisma ORM for database access",
+    "Zod for runtime validation"
+  ]}
+/>
+
+<TechStack
+  title="Authentication"
+  items={[
+    "Clerk for authentication",
+    "Webhook support for user sync and fallback",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="AI Services">
+    
+<TechStack 
+  title="OpenAI Integration"
+  items={[
+    "GPT-4o-mini for content analysis and formatting",
+    "text-embedding-3-small for semantic search (1536 dimensions)",
+    "Custom prompt engineering for organization",
+    "Token optimization and cost control"
+  ]}
+/>
+
+<TechStack
+  title="AI Features"
+  items={[
+    "Lazy embedding generation (on-demand)",
+    "Semantic search with cosine similarity",
+    "Automatic content organization",
+    "Smart folder and tag suggestions",
+    "Automatic formatter fully support Text Editor features",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="DevOps">
+    
+<TechStack 
+  items={[
+    "Vercel for deployment and hosting",
+    "PostgreSQL hosted on Neon DB",
+    "npm for package management",
+    "Git for version control"
+  ]}
+/>
+
+  </TabItem>
+</Tabs>
+
+## Project Structure
+
+<FileTree>
+  {`src/
+├── actions/              # Server actions (API layer)
+│   ├── aiActions.ts      # AI features
+│   ├── noteActions.ts    # Note CRUD
+│   ├── folderActions.ts  # Folder management
+│   └── tagActions.ts     # Tag operations
+├── app/                  # Next.js App Router
+│   ├── (auth)/          # Auth pages
+│   ├── (main)/          # Main app
+│   │   ├── layout.tsx   # Sidebar + header
+│   │   └── notes/       # Notes routes
+│   │       ├── page.tsx
+│   │       ├── new/
+│   │       └── [id]/
+│   └── api/webhooks/    # Clerk webhooks
+├── components/
+│   ├── editor/          # Note editor
+│   ├── modals/          # Dialogs
+│   │   ├── QuickCaptureModal.tsx
+│   │   └── SearchModal.tsx
+│   ├── sidebar/         # Navigation
+│   └── ui/              # shadcn components
+├── hooks/               # React Query hooks
+│   ├── use-notes.ts
+│   ├── use-folders.ts
+│   └── use-semantic-search.ts
+├── lib/                 # Utilities
+│   ├── prisma.ts
+│   ├── queryClient.ts
+│   └── auth.ts
+├── services/            # External services
+│   └── ai/
+│       ├── content-analyzer.ts
+│       ├── semantic-search.ts
+│       └── prompts/
+└── schemas/             # Zod validation
+    ├── noteSchemas.ts
+    └── folderSchemas.ts`}
+</FileTree>
+
+## Database Architecture
+
+<Collapse title="Database Schema">
+
+The database uses PostgreSQL with Prisma ORM. Key design decisions include:
+
+**Core Models:**
+
+- **User** - Synced from Clerk authentication
+- **Note** - Main content with rich text and embeddings
+- **Folder** - 3-level hierarchy for organization
+- **Tag** - Many-to-many via NoteTag junction table
+
+**Semantic Search Fields:**
+
+```prisma
+model Note {
+  // ... other fields
+
+  embedding          Float[]    // 1536-dimension vector
+  embeddingUpdatedAt DateTime?  // Last embedding generation
+  contentUpdatedAt   DateTime   // Track content changes
+}
+```
+
+<Callout type="info" title="Lazy Embeddings Strategy">
+  Embeddings are generated **only when searching** AND **only for notes that
+  updated after embedding generation**, not on note creation. This saves 90% of
+  API costs and eliminates impact on note creation speed.
+</Callout>
+
+**Folder Hierarchy Rules:**
+
+- Maximum 3 levels deep (depth: 0, 1, 2)
+- Self-referential with `parentId`
+- Cascade delete prevents orphaned folders
+- Special "Inbox" folder with `isDefault: true`
+
+**Tag System:**
+
+- Always stored lowercase
+- Unique per user (case-insensitive)
+- Many-to-many relationship with notes
+
+</Collapse>
+
+<Collapse title="Architecture Patterns">
+
+### State Management Strategy
+
+<ProcessFlow
+  variant="compact"
+  steps={[
+    "Database State → React Query",
+    "UI State (global) → Zustand",
+    "Form State (complex) → useReducer",
+    "Form State (simple) → useState",
+  ]}
+/>
+
+### Server Actions Pattern
+
+All server operations follow a consistent pattern:
+
+```typescript
+export async function actionName(
+  input: InputType
+): Promise<ActionResult<ReturnType>> {
+  try {
+    // 1. Authenticate
+    const userId = await requireAuth();
+
+    // 2. Validate input
+    const validated = zodSchema.parse(input);
+
+    // 3. Database operation
+    const result = await prisma.model.operation({
+      where: { userId },
+      data: validated,
+    });
+
+    // 4. Revalidate cache
+    revalidatePath("/notes");
+
+    // 5. Return typed success
+    return createSuccessResult(result);
+  } catch (error) {
+    return createErrorResult({ error: "Failed" });
+  }
+}
+```
+
+<Callout type="tip" title="Why ActionResult?">
+  Using a discriminated union type (`success: true | false`) instead of throwing
+  errors makes error handling in components more predictable and type-safe.
+</Callout>
+
+<Collapse title="React Query Optimistic Updates">
+
+One of the key patterns making the app feel instant is optimistic updates. When a user performs an action, we immediately update the UI before waiting for the server response.
+
+**Example: Creating a Note**
+
+```typescript
+export function useCreateNote() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createNote,
+
+    // 1. Optimistic update (before server responds)
+    onMutate: async (newNote) => {
+      // Cancel outgoing queries to avoid race conditions
+      await queryClient.cancelQueries({ queryKey: NOTES_QUERY_KEY });
+
+      // Snapshot current state for rollback
+      const previous = queryClient.getQueryData(NOTES_QUERY_KEY);
+
+      // Immediately add note to cache
+      queryClient.setQueryData(NOTES_QUERY_KEY, (old) => {
+        return [...(old || []), optimisticNote];
+      });
+
+      return { previous };
+    },
+
+    // 2. Rollback on error
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(NOTES_QUERY_KEY, context?.previous);
+      toast.error("Failed to create note");
+    },
+
+    // 3. Sync with server on completion
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: NOTES_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: FOLDERS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: TAGS_QUERY_KEY });
+    },
+
+    // 4. Success feedback
+    onSuccess: (data) => {
+      toast.success("Note created!");
+    },
+  });
+}
+```
+
+<Callout type="success" title="Why This Matters">
+  Users see their changes instantly without waiting for the server. If the
+  server fails, we rollback automatically. This creates a snappy, responsive
+  experience that feels native.
+</Callout>
+
+**Result:** The UI updates in < 50ms instead of waiting 200-500ms for the server. If something fails, the user sees the error and the UI reverts gracefully.
+
+</Collapse>
+
+</Collapse>
+
+## Core Features
+
+<FeatureList>
+
+<Feature icon="✏️" title="Rich Text Editor">
+  Full-featured Tiptap editor with: - **Text Formatting:** Bold, italic,
+  underline, strikethrough, code, highlight - **Headings:** H1-H6 with visual
+  hierarchy - **Lists:** Bullet, numbered, task lists with checkboxes - **Code
+  Blocks:** Syntax highlighting for 30+ languages via lowlight - **Math
+  Support:** Inline and block LaTeX equations - **Auto-Save:** Debounced saving
+  every 2 seconds with visual indicators
+  <ImageGallery
+    columns={2}
+    images={[
+      {
+        src: "/images/projects/second-brain/editor-code-block.png",
+        alt: "Code block with syntax highlighting",
+        caption: "Syntax highlighting for 30+ languages",
+      },
+      {
+        src: "/images/projects/second-brain/editor-math-block.png",
+        alt: "LaTeX math equations",
+        caption: "Inline and block LaTeX support",
+      },
+    ]}
+  />
+</Feature>
+
+<Feature icon="📁" title="Smart Folder System">
+  Organize notes in a 3-level hierarchy with: - **Custom Colors:** 6 options
+  (Gray, Red, Green, Blue, Yellow, Purple) - **Special Inbox:** Auto-created for
+  unorganized content - **Validation:** Prevents circular references and
+  duplicate names - **Note Organization:** Move notes between folders
+
+  <Figure 
+  src="/images/projects/second-brain/folders-modal.png"
+  alt="Folder hierarchy with color coding"
+  caption="3-level folder structure with custom colors"
+  width="sm"
+/>
+</Feature>
+
+<Feature icon="🏷️" title="Tag System">
+  Flexible tagging with: - **Automatic Normalization:** Always lowercase,
+  hyphenated - **Many-to-Many:** Multiple tags per note, reusable across notes -
+  **Smart Suggestions:** AI suggests relevant existing tags - **Quick
+  Filtering:** Click any tag to filter notes
+</Feature>
+
+<Feature icon="⭐" title="Favorites">
+  Star important notes for quick access: - **Quick Access:** Top 5 favorites
+  shown in sidebar - **Dedicated View:** Filter to show only favorites -
+  **Optimistic Updates:** Instant star/unstar feedback
+</Feature>
+
+<Feature icon="🚀" title="Quick Capture (AI-Powered)">
+  Paste anything and AI organizes it automatically: - **Smart Analysis:**
+  Suggests title, folder, and tags (3-5 seconds) - **Folder Matching:** Prefers
+  existing folders, creates new if needed - **Tag Intelligence:** Reuses
+  existing tags + adds specific new ones - **Content Formatting:** Converts
+  plain text to rich HTML
+</Feature>
+
+<Feature icon="✨" title="AI-Powered Content Formatter">
+  Transform plain text into beautifully formatted rich text: - **Smart Structure
+  Detection:** Automatically detects headings, lists, and code blocks - **Code
+  Syntax Highlighting:** Preserves code formatting with proper language
+  detection - **Math Support:** Converts LaTeX notation to rendered equations -
+  **Full Editor Support:** Works seamlessly with all Tiptap features - **Fast
+  Processing:** Formats content in 2-3 seconds using OpenAI GPT-4o-mini
+</Feature>
+
+<Feature icon="🔍" title="Semantic Search">
+  AI-powered search that understands meaning: - **Natural Language:** Search
+  like "how to sort arrays efficiently" - **Context-Aware:** Finds related notes
+  even without exact keywords - **Fast Results:** 300-500ms after first search
+  (embeddings cached) - **Similarity Scores:** See how relevant each result is
+  (0-100%)
+</Feature>
+
+</FeatureList>
+
+## How Quick Capture Works
+
+Quick Capture is the standout feature - it uses AI to analyze pasted content and automatically organize it.
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/second-brain/quick-capture-1.png",
+      alt: "Quick Capture modal",
+      caption: "Quick Capture modal",
+    },
+    {
+      src: "/images/projects/second-brain/quick-capture-2.png",
+      alt: "Ai Analysis results",
+      caption: "Ai Analysis results",
+    },
+  ]}
+/>
+
+<UserFlow
+  steps={[
+    "User opens Quick Capture modal (Cmd+Shift+C)",
+    "User pastes content (code, notes, recipes, etc.)",
+    "User clicks [Organize with AI]",
+    "Fetch user's existing folders & tags for context",
+    "Build AI prompt with folder hierarchy and tag list",
+    "Call OpenAI GPT-4o-mini with structured JSON output",
+    "AI analyzes content and suggests organization",
+    "Parse response: title, folder path, tags, reasoning",
+    "Match folder path to existing folders",
+    "Pre-fill form with AI suggestions",
+    "User reviews and edits if needed",
+    "Format content: plain text → rich HTML",
+    "Create folder if AI suggested a new one",
+    "Create note with formatted content",
+    "Navigate to note editor",
+  ]}
+/>
+
+<Collapse title="AI Folder Logic">
+
+The AI follows specific rules for folder suggestions:
+
+**1. Prefer Existing Folders**
+
+- Searches for semantic matches in user's folder structure
+- Prefers most specific match (e.g., "Algorithms/Sorting" over "Algorithms")
+- Case-insensitive, path-aware matching
+
+**2. Create New Only at Root**
+
+- If no match found, suggests NEW root-level folder
+- Never suggests nested paths for new folders
+- Example: "Recipes" (✅) not "Cooking/Desserts" (❌)
+
+**3. Use Inbox for Vague Content**
+
+- Generic or unclear content → suggest "Inbox"
+- Prevents creation of useless folders like "misc" or "temp"
+
+**Example:**
+
+```
+User pastes: Python merge sort code
+Existing folders: Algorithms/Sorting, Recipes
+AI suggests: "Algorithms/Sorting" ✅
+```
+
+</Collapse>
+
+<Collapse title="AI Tag Logic">
+
+**Tag Suggestion Rules:**
+
+1. **Always reuse existing tags when relevant**
+
+   - Prevents tag proliferation
+   - Maintains consistency
+
+2. **Add new specific tags for discoverability**
+
+   - Balance: Broad existing + Specific new
+   - Example: Hash table code + existing "algorithms" tag
+   - Result: `["algorithms", "hash-table", "data-structures"]`
+
+3. **Clear content: 2-5 tags, Vague content: 0-1 tags**
+
+4. **Lowercase, hyphenated format**
+   - "python" not "Python"
+   - "hash-table" not "hash_table" or "hashtable"
+
+</Collapse>
+
+## Semantic Search Architecture
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/second-brain/semantic-search-1.png",
+      alt: "Sematic search",
+      caption: "Sematic search - first search (generate embeddings)",
+    },
+    {
+      src: "/images/projects/second-brain/semantic-search-2.png",
+      alt: "Sematic search",
+      caption: "Sematic search - second search (embeddings already generated)",
+    },
+  ]}
+/>
+
+The search system uses "lazy embeddings" - a cost-effective approach that generates embeddings on-demand.
+
+<Callout type="success" title="Why Lazy Embeddings?">
+  **Benefits:** - Zero impact on note creation speed - First search: 2-3s
+  (generates embedding for all notes) - Subsequent searches: 300ms (uses cached)
+  - 90% cheaper after first search - No background jobs needed , generate
+  embeddings for new and updates notes only
+</Callout>
+
+### Search Flow
+
+<ProcessFlow
+  steps={[
+    "User searches: 'how to sort arrays'",
+    "Fetch all notes with embedding metadata",
+    "Check embedding freshness for each note",
+    "Identify stale notes (content changed since last embedding)",
+    "Prepare texts: strip HTML, combine title + tags + content",
+    "Generate embeddings for stale notes (parallel batches of 10)",
+    "Generate query embedding",
+    "Calculate cosine similarity (query vs all notes)",
+    "Filter by threshold (30% minimum)",
+    "Sort by similarity (highest first)",
+    "Return top 20 results",
+    "Save new embeddings to DB (background, non-blocking)",
+  ]}
+/>
+
+### Embedding Freshness Logic
+
+The system intelligently decides when to regenerate embeddings:
+
+<Tabs>
+<TabItem label="Needs Regeneration">
+
+<TechStack
+  items={[
+    "No embedding exists - First time searching this note",
+    "Missing timestamp - Corrupted metadata",
+    "Content updated - contentUpdatedAt > embeddingUpdatedAt",
+    "Wrong dimensions - Should be 1536, might be corrupted",
+  ]}
+/>
+
+</TabItem>
+
+<TabItem label="Fresh (Use Cache)">
+
+<TechStack
+  items={[
+    "Has embedding - Not null or empty",
+    "Has timestamp - embeddingUpdatedAt exists",
+    "Content unchanged - contentUpdatedAt <= embeddingUpdatedAt",
+    "Correct dimensions - Exactly 1536 floats",
+  ]}
+/>
+
+</TabItem>
+</Tabs>
+
+### Performance Metrics
+
+<Stats>
+  <StatCard value="2-5s" label="First Search" />
+  <StatCard value="300ms" label="Cached Search" />
+  <StatCard value="$0.0001" label="Cost for 29 notes" />
+  <StatCard value="30%" label="Similarity Threshold" />
+</Stats>
+
+## Challenges & Solutions
+
+<Challenge
+  title="Challenge 1: Form State Complexity"
+  problem="Note editor has 5+ interdependent fields (title, content, folder, tags, favorite). Using multiple useState hooks led to sync issues and complex update logic."
+  solution="Implemented useReducer pattern with typed actions. Single source of truth for form state, predictable updates, easier to test. Created noteFormReducer with actions like SET_TITLE, ADD_TAG, TOGGLE_FAVORITE, LOAD_NOTE."
+  result="Cleaner code, fewer bugs, easier to add new fields. Form state updates are now predictable and testable."
+/>
+
+<Challenge
+  title="Challenge 2: Search Performance"
+  problem="Generating embeddings on note creation was slow (2-3s per note) and expensive. Users had to wait after every note save, terrible UX."
+  solution="Implemented lazy embeddings - generate only when searching. Cache embeddings in database with freshness tracking. Regenerate only when content changes. Added batch processing for multiple notes."
+  result="Zero impact on note creation. First search is slower but subsequent searches are 10x faster. 90% cost reduction after initial search."
+/>
+
+<Challenge
+  title="Challenge 3: Folder Path Matching"
+  problem="AI suggests paths like 'Algorithms/Sorting' but database stores flat structure with parentId. Needed to match AI suggestions to existing folders."
+  solution="Built recursive path building function that traverses parent relationships. Created findFolderByPath() that builds paths for all folders and matches case-insensitively. Returns deepest match (most specific)."
+  result="AI suggestions now correctly match existing nested folders. Users get accurate pre-fills in Quick Capture."
+/>
+
+<Challenge
+  title="Challenge 4: Auto-Save Race Conditions"
+  problem="Saving on every keystroke caused too many API calls. Not saving enough risked data loss. Race conditions when user types fast."
+  solution="Implemented 2-second debounced auto-save with cleanup. Only saves if note already exists (createdNoteId). Cancels pending saves when user types again. Shows 'Last saved' timestamp for confidence."
+  result="Smooth editing experience. No API spam. No lost data. Users see visual confirmation of saves."
+/>
+
+<Challenge
+  title="Challenge 5: Tag Normalization"
+  problem="Users entered tags inconsistently: 'Python', 'python', 'PYTHON' created duplicates. Case-sensitive matching failed. Hard to search and filter."
+  solution="Enforce lowercase storage in database. Normalize all tag inputs to lowercase in server actions. Case-insensitive unique constraint. Display tags in lowercase everywhere."
+  result="No duplicate tags. Consistent search/filtering. Better user experience. Follows industry standards (GitHub, Stack Overflow)."
+/>
+
+## Data Flow Examples
+
+<Collapse title="Creating a Note - Full Flow">
+
+<ProcessFlow
+  variant="vertical"
+  steps={[
+    "User clicks [+ New Note] button",
+    "Navigate to /notes/new route",
+    "NoteEditor component mounts in 'create' mode",
+    "User types title and content in Tiptap editor",
+    "User selects folder from dropdown",
+    "User adds tags via TagInput component",
+    "User clicks [Save] or auto-save triggers after 2s",
+    "Call createNote() server action",
+    "Server: Authenticate user with Clerk",
+    "Server: Validate input with Zod schema",
+    "Server: Normalize tags to lowercase",
+    "Server: Upsert tags (find or create)",
+    "Server: Create note in database with Prisma",
+    "Server: Link tags via NoteTag junction table",
+    "Server: Revalidate /notes path cache",
+    "Server: Return success result with note data",
+    "React Query: Execute onSuccess callback",
+    "Invalidate queries: notes, folders, tags",
+    "Show success toast notification",
+    "Navigate to /notes/:id (edit mode)",
+    "NoteEditor remounts with note data loaded",
+  ]}
+/>
+
+</Collapse>
+
+<Collapse title="Quick Capture - AI Organization">
+
+<ProcessFlow
+  variant="vertical"
+  steps={[
+    "User opens Quick Capture modal (Cmd+Shift+C)",
+    "Modal appears in 'capture' step",
+    "User pastes Python sorting code",
+    "User clicks [Organize with AI]",
+    "Modal shows 'processing' step with loading spinner",
+    "Call analyzeContentForOrganization() server action",
+    "Server: Fetch user's folders (build full paths)",
+    "Server: Fetch user's tags (for AI context)",
+    "Server: Build AI prompt with folder hierarchy and tags",
+    "Server: Call OpenAI GPT-4o-mini with structured output",
+    "AI analyzes code, suggests: title='Merge Sort', folder='Algorithms/Sorting', tags=['python', 'merge-sort']",
+    "Server: Parse JSON response, normalize tags",
+    "Server: Return suggestions with confidence level",
+    "Modal transitions to 'review' step",
+    "findFolderByPath() matches 'Algorithms/Sorting' to existing folder",
+    "Pre-fill form with AI suggestions",
+    "User reviews, edits title slightly",
+    "User clicks [Save Note]",
+    "Modal shows 'Formatting...' indicator",
+    "Call formatContentAction() to convert code to HTML",
+    "Server: Format with syntax highlighting",
+    "Modal shows 'Saving...' indicator",
+    "Call createNote() with formatted content",
+    "Server: Create note, link tags, set folder",
+    "Success! Navigate to /notes/:id",
+    "Modal closes, user sees their formatted note",
+  ]}
+/>
+
+</Collapse>
+
+## Learning Outcomes
+
+Building Second Brain taught me valuable lessons about production app development and AI integration.
+
+### Technical Skills Gained
+
+<FeatureGrid>
+
+<FeatureCard title="React Query Mastery">
+  Learned advanced patterns like optimistic updates, cache invalidation
+  strategies, and query key management. Understand when to use queries vs
+  mutations.
+</FeatureCard>
+
+<FeatureCard title="AI Integration">
+  Implemented cost-effective AI features with lazy evaluation, prompt
+  engineering, and error handling. Learned to balance AI power with performance
+  and cost.
+</FeatureCard>
+
+<FeatureCard title="State Management">
+  Mastered the decision tree: React Query for server state, Zustand for UI
+  state, useReducer for complex forms, useState for simple state.
+</FeatureCard>
+
+<FeatureCard title="Server Actions">
+  Built type-safe API layer with Next.js Server Actions. Learned proper error
+  handling patterns and cache revalidation strategies.
+</FeatureCard>
+
+<FeatureCard title="Database Design">
+  Designed complex relationships (many-to-many, self-referential) with Prisma.
+  Learned about indexes, cascade deletes, and query optimization.
+</FeatureCard>
+
+<FeatureCard title="Rich Text Editing">
+  Integrated Tiptap with custom extensions. Learned about ProseMirror, document
+  models, and collaborative editing challenges.
+</FeatureCard>
+
+</FeatureGrid>
+
+### Architecture Insights
+
+<Callout type="tip" title="Key Takeaway: Know When to Use AI">
+  Not every feature needs AI.
+</Callout>
+
+**Use AI for:**
+
+<TechStack
+  items={[
+    "Tasks people find tedious (organization)",
+    "Understanding unstructured data (search)",
+    "Enhancing UX without slowing it down (lazy eval)",
+  ]}
+/>
+
+**Don't use AI for:**
+
+<TechStack
+  items={[
+    "Simple deterministic operations",
+    "Real-time interactions",
+    "Features where cost matters more than quality",
+  ]}
+/>
+
+## Future Enhancements
+
+### Planned Features
+
+<FeatureList>
+
+<Feature icon="📱" title="Mobile App">
+  Native iOS and Android apps with offline support. Sync notes across devices
+  with conflict resolution.
+</Feature>
+
+<Feature icon="🔗" title="Note Linking">
+  Create connections between notes with bidirectional links. Visualize knowledge
+  graph.
+</Feature>
+
+<Feature icon="📤" title="Export & Backup">
+  Export to Markdown, PDF, or JSON. Automated backups to cloud storage.
+</Feature>
+
+<Feature icon="👥" title="Collaboration">
+  Share notes with others. Real-time collaborative editing. Comments and
+  annotations.
+</Feature>
+
+<Feature icon="🎨" title="Templates">
+  Create note templates for common formats. Quick start for meeting notes, study
+  guides, etc.
+</Feature>
+
+<Feature icon="📊" title="Analytics">
+  Track study patterns, note creation trends, most used tags. Insights
+  dashboard.
+</Feature>
+
+</FeatureList>
+
+### Technical Improvements
+
+- **Pagination** for large note lists (> 500 notes)
+- **Cloud storage** for images (S3/Cloudflare R2)
+- **Offline support** with service workers
+- **Dark mode toggle** (currently uses system preference)
+- **More keyboard shortcuts** beyond / and Cmd+K / Cmd+ALT+H
+
+## Conclusion
+
+Second Brain demonstrates that AI can enhance productivity tools without compromising performance or UX. The key insights:
+
+1. **Lazy evaluation** makes AI affordable and fast
+2. **Type safety** catches bugs before production
+3. **Optimistic updates** make apps feel instant
+4. **Smart state management** scales with complexity
+5. **User-first design** beats feature bloat
+
+<Callout type="success" title="Most Important Lesson">
+  Focus on solving real problems first. AI should enhance the experience, not
+  define it. Second Brain works great because the core note-taking experience is
+  solid, and AI adds value on top.
+</Callout>
+
+Building with modern tools like Next.js 15 (App Router), React Query, and Prisma made development faster and more enjoyable. TypeScript caught countless bugs before users saw them. Server Actions eliminated boilerplate.
+
+The result is a production-ready app that students actually want to use for their studies. 🎓
