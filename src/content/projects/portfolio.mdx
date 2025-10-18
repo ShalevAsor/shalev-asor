@@ -1,0 +1,279 @@
+---
+title: "Portfolio Website"
+slug: "portfolio"
+description: "Custom portfolio with MDX-powered project documentation and reusable components"
+date: "2025-10-15"
+published: true
+featured: false
+tags: ["nextjs", "typescript", "mdx", "velite", "portfolio"]
+github: "https://github.com/ShalevAsor/portfolio"
+demo: "https://shalevasor.dev"
+image: ../../../public/images/projects/portfolio/main.png
+---
+
+## Overview
+
+Most developer portfolios are boring - just a list of projects with brief descriptions. I wanted something better. This portfolio turns project documentation into an experience with custom MDX components, interactive examples, and detailed technical breakdowns.
+
+**Why this approach?** Most portfolios say "I built an e-commerce site with Next.js and Stripe." Cool, but how? This portfolio explains the technical challenges, architectural decisions, and interesting solutions. It's a portfolio that actually demonstrates technical depth.
+
+## Tech Stack
+
+<TechStack
+  items={[
+    "Next.js 15 with App Router for static generation",
+    "TypeScript for type safety",
+    "Velite for MDX content management with type generation",
+    "Tailwind CSS for styling with custom design system",
+    "Custom MDX components for rich documentation",
+    "rehype-pretty-code for syntax highlighting",
+    "rehype-slug + rehype-autolink-headings for heading links",
+    "React Server Components for optimal performance",
+  ]}
+/>
+
+## Custom MDX Components
+
+The real value of this portfolio is the component system. Instead of writing HTML or plain markdown, I built reusable components that make documentation beautiful and interactive.
+
+<FeatureList>
+  <Feature title="Content Components">
+    **Callout** - Highlight important information with 4 types (info, success,
+    warning, tip) **Collapse** - Collapsible sections for long technical details
+    **Quote** - Customer testimonials or impactful quotes **Tabs** - Organize
+    tech stack or multiple code examples
+  </Feature>
+  <Feature title="Code & Technical">
+    **TechStack** - Bulleted lists with proper formatting **FileTree** - Display
+    project structure visually **ProcessFlow** - Show sequential steps (vertical
+    or compact) **UserFlow** - Visual flowcharts with numbered steps
+    **UserFlowGrouped** - Multi-phase workflows (this is new!)
+  </Feature>
+  <Feature title="Visual Components">
+    **Figure** - Single image with caption and lightbox **ImageGallery** - Grid
+    of images (2-4 columns) with lightbox **ImageComparison** - Before/after
+    comparisons **Stats** - Key metrics display in grid **StatCard** -
+    Individual metric with trend indicator
+  </Feature>
+  <Feature title="Project Documentation">
+    **Challenge** - Problem/Solution/Result pattern for technical challenges
+    **Step** - Step-by-step processes with numbered circles **FeatureList +
+    Feature** - Detailed feature descriptions with icons **FeatureGrid +
+    FeatureCard** - Grid layout for features
+  </Feature>
+</FeatureList>
+
+## How It Works
+
+<Collapse title="Velite + MDX Pipeline">
+
+**1. Content Management**
+
+Projects live in `src/content/projects/*.mdx`. Velite processes them at build time:
+
+```typescript
+// velite.config.mts
+export default defineConfig({
+  collections: {
+    projects: {
+      pattern: "projects/**/*.mdx",
+      schema: s.object({
+        title: s.string(),
+        slug: s.slug("projects"),
+        description: s.string(),
+        date: s.isodate(),
+        published: s.boolean(),
+        featured: s.boolean(),
+        tags: s.array(s.string()),
+        github: s.string().url().optional(),
+        demo: s.string().url().optional(),
+        // ... more fields
+      }),
+    },
+  },
+});
+```
+
+Velite generates:
+
+- TypeScript types in `.velite/index.d.ts`
+- JSON data in `.velite/projects.json`
+- Automatic slug validation and permalink generation
+
+**2. MDX Processing**
+
+Each MDX file goes through rehype plugins:
+
+- **rehype-slug** - Adds IDs to headings
+- **rehype-pretty-code** - Syntax highlighting with One Dark Pro theme
+- **rehype-autolink-headings** - Makes headings clickable
+
+**3. Component Mapping**
+
+Custom components are mapped to MDX in `MDXContent.tsx`:
+
+```typescript
+const mdxComponents = {
+  Callout,
+  Collapse,
+  TechStack,
+  Challenge,
+  // ... 20+ custom components
+
+  // Override default HTML
+  h2: (props) => (
+    <h2 className="text-3xl font-semibold mb-4 mt-12" {...props} />
+  ),
+  code: (props) => (
+    <code className="bg-muted px-1.5 py-0.5 rounded" {...props} />
+  ),
+};
+```
+
+**4. Static Generation**
+
+Next.js generates static pages at build time:
+
+- `/` - Homepage
+- `/projects` - Project listing
+- `/projects/[slug]` - Individual project pages
+
+Result: Fast, SEO-friendly, no runtime processing.
+
+</Collapse>
+
+## Project Page Structure
+
+Every project follows the same structure for consistency:
+
+<ProcessFlow
+  variant="compact"
+  steps={[
+    "Overview with Stats callout",
+    "Tech Stack in Tabs (Frontend/Backend/DevOps)",
+    "Core Features with FeatureList",
+    "Architecture explanation with FileTree",
+    "Database schema in Collapse",
+    "User journey with UserFlowGrouped",
+    "Technical Challenges with Challenge components",
+    "Performance optimizations with FeatureGrid",
+    "Learning outcomes and future enhancements",
+    "Conclusion with key takeaways",
+  ]}
+/>
+
+This structure tells a complete story: what it does, how it's built, what problems it solves, and what I learned.
+
+## Design Decisions
+
+<FeatureGrid>
+  <FeatureCard title="Velite over Contentlayer">
+    Velite is lighter, faster, and actively maintained. Contentlayer was
+    abandoned. Velite's API is cleaner and TypeScript support is better.
+  </FeatureCard>
+  <FeatureCard title="Custom Components over Templates">
+    Building components once means every project page is consistent. Adding a
+    new project is just writing MDX - no styling or layout decisions.
+  </FeatureCard>
+  <FeatureCard title="Static Generation">
+    All projects are static HTML at build time. Fast page loads, great SEO,
+    works with JavaScript disabled. Perfect for a portfolio.
+  </FeatureCard>
+  <FeatureCard title="One Dark Pro Theme">
+    Developers recognize this theme from VS Code. Syntax highlighting feels
+    familiar and professional.
+  </FeatureCard>
+  <FeatureCard title="No Database">
+    Content is markdown files in git. Changes are tracked in version control. No
+    CMS needed. Simpler deployment.
+  </FeatureCard>
+  <FeatureCard title="Server Components">
+    Everything is a Server Component by default. Client components only for
+    interactivity (modals, carousels). Better performance.
+  </FeatureCard>
+</FeatureGrid>
+
+## The UserFlowGrouped Story
+
+<Collapse title="Why I Built This Component">
+
+**The Problem:**
+
+The original `UserFlow` component displayed flows vertically with arrows between steps. For projects with 20-30 steps (like Tale By You's checkout flow), it was way too long. Users had to scroll forever.
+
+**First Solution - Horizontal Timeline:**
+
+I created `UserFlowTimeline` with horizontal scrolling cards. Better, but still not ideal for very long flows.
+
+**Final Solution - UserFlowGrouped:**
+
+Group steps into collapsible phases:
+
+```tsx
+<UserFlowGrouped
+  phases={[
+    {
+      title: "Template Selection",
+      icon: "📝",
+      steps: [
+        "Browse templates",
+        "Select template",
+        // ... more steps
+      ],
+    },
+    {
+      title: "AI Generation",
+      icon: "🎨",
+      steps: [
+        "Generate images",
+        "Process results",
+        // ... more steps
+      ],
+    },
+  ]}
+/>
+```
+
+Users see 4-5 phase headers. Click to expand details. **Much more compact** while still showing the complete flow.
+
+This is a perfect example of iterating on portfolio components based on real needs.
+
+</Collapse>
+
+## What I Learned
+
+Building this portfolio taught me:
+
+<TechStack
+  items={[
+    "MDX is powerful for rich content - way better than plain markdown",
+    "Component systems make documentation consistent and maintainable",
+    "Velite's type generation catches content errors at build time",
+    "Static generation is perfect for portfolios - fast and SEO-friendly",
+    "Iterating on components based on usage improves the system",
+    "Writing detailed project docs helps me understand my own work better",
+  ]}
+/>
+
+## Why This Matters
+
+Most portfolios are resumes with links. This portfolio is **proof of technical depth**. When I say "I built a Discord clone with a custom WebSocket server," you can read exactly how:
+
+- Why I built my own instead of using Socket.io
+- How I solved race conditions
+- What the architecture looks like
+- The actual code patterns I used
+
+That's way more valuable than "Discord Clone - Next.js, WebSocket, MongoDB."
+
+## Conclusion
+
+This portfolio is a template for technical documentation. The custom components make it easy to add new projects with consistent, high-quality documentation. Writing these detailed project pages also helps me understand my own work better - explaining something forces you to understand it deeply.
+
+<Callout type="success" title="Recursive?">
+  This very page you're reading was written using the same MDX components and
+  Velite pipeline. The portfolio documents itself using its own system. That's
+  pretty cool.
+</Callout>
+
+If you're building a portfolio, steal this approach. Build a component system, write detailed docs, show your technical depth. Way better than a list of project cards.

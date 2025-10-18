@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { useState, ReactNode } from "react";
 import {
   FaChevronDown,
@@ -28,8 +28,8 @@ export function Callout({ type = "info", title, children }: CalloutProps) {
       titleColor: "text-blue-500",
     },
     success: {
-      bg: "bg-green-500/10 border-green-500/50",
-      icon: <FaCheckCircle className="h-5 w-5 text-green-500" />,
+      bg: "bg-green-500/5 border-green-500/10",
+      icon: <FaCheckCircle className="h-5 w-5 text" />,
       titleColor: "text-green-500",
     },
     warning: {
@@ -49,7 +49,7 @@ export function Callout({ type = "info", title, children }: CalloutProps) {
   return (
     <div className={`border rounded-lg p-4 my-6 ${style.bg}`}>
       <div className="flex gap-3">
-        <div className="flex-shrink-0 mt-0.5">{style.icon}</div>
+        {/* <div className="flex-shrink-0 mt-0.5">{style.icon}</div> */}
         <div className="flex-1">
           {title && (
             <div className={`font-semibold mb-2 ${style.titleColor}`}>
@@ -122,9 +122,9 @@ export function TechStack({ title, items }: TechStackProps) {
         {items.map((item, index) => (
           <li
             key={index}
-            className="text-muted-foreground flex items-start gap-3"
+            className="text-muted-foreground items-center flex gap-3"
           >
-            <span className="text-primary mt-1 font-bold">→</span>
+            <span className="rounded-full h-2 w-2 bg-primary mt-1 font-bold"></span>
             <span className="leading-relaxed">{item}</span>
           </li>
         ))}
@@ -230,9 +230,9 @@ export function FeatureCard({ title, children }: FeatureCardProps) {
   return (
     <div className="border border-border rounded-lg p-4 bg-card hover:border-primary/50 transition-colors">
       <h4 className="font-semibold mb-2 text-foreground">{title}</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">
+      <div className="text-sm text-muted-foreground leading-relaxed">
         {children}
-      </p>
+      </div>
     </div>
   );
 }
@@ -321,7 +321,7 @@ export function Tabs({ defaultTab = 0, children }: TabsProps) {
     <div className="my-6 border border-border rounded-lg overflow-hidden bg-card">
       {/* Tab Headers */}
       <div className="flex border-b border-border bg-muted/30">
-        {tabs.map((tab: any, index: number) => (
+        {tabs.map((tab, index: number) => (
           <button
             key={index}
             onClick={() => setActiveTab(index)}
@@ -478,6 +478,211 @@ export function Feature({ icon, title, children }: FeatureProps) {
 }
 
 // ============================================
+// OPTION 1: Grouped Accordion UserFlow
+// ============================================
+
+interface UserFlowGroupedProps {
+  phases: Array<{
+    title: string;
+    icon: string;
+    steps: string[];
+  }>;
+  title?: string;
+}
+
+export function UserFlowGrouped({ phases, title }: UserFlowGroupedProps) {
+  const [openPhases, setOpenPhases] = useState<number[]>([0]); // First phase open by default
+
+  const togglePhase = (index: number) => {
+    setOpenPhases((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  return (
+    <div className="my-8">
+      {title && (
+        <h3 className="text-2xl font-semibold mb-6 text-foreground">{title}</h3>
+      )}
+
+      <div className="space-y-3">
+        {phases.map((phase, phaseIndex) => {
+          const isOpen = openPhases.includes(phaseIndex);
+          const stepOffset = phases
+            .slice(0, phaseIndex)
+            .reduce((sum, p) => sum + p.steps.length, 0);
+
+          return (
+            <div
+              key={phaseIndex}
+              className="border border-border rounded-lg overflow-hidden bg-card"
+            >
+              {/* Phase Header */}
+              <button
+                onClick={() => togglePhase(phaseIndex)}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors text-left group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{phase.icon}</span>
+                  <div>
+                    <h4 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {phase.title}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {phase.steps.length} steps
+                    </p>
+                  </div>
+                </div>
+                {isOpen ? (
+                  <FaChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                ) : (
+                  <FaChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                )}
+              </button>
+
+              {/* Phase Steps */}
+              {isOpen && (
+                <div className="px-6 pb-6 pt-2 animate-fadeIn">
+                  <div className="space-y-2">
+                    {phase.steps.map((step, stepIndex) => (
+                      <div
+                        key={stepIndex}
+                        className="flex items-start gap-3 py-2"
+                      >
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary">
+                            {stepOffset + stepIndex + 1}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed pt-0.5">
+                          {step}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// OPTION 2: Horizontal Timeline UserFlow
+// ============================================
+
+interface UserFlowTimelineProps {
+  phases: Array<{
+    title: string;
+    icon: string;
+    description: string;
+    steps: string[];
+  }>;
+  title?: string;
+}
+
+export function UserFlowTimeline({ phases, title }: UserFlowTimelineProps) {
+  return (
+    <div className="my-8">
+      {title && (
+        <h3 className="text-2xl font-semibold mb-6 text-foreground">{title}</h3>
+      )}
+
+      {/* Progress Bar */}
+      <div className="mb-8 relative">
+        <div className="flex items-center justify-between">
+          {phases.map((phase, index) => (
+            <div key={index} className="flex-1 flex items-center">
+              {/* Phase Circle */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center">
+                  <span className="text-2xl">{phase.icon}</span>
+                </div>
+                <span className="mt-2 text-xs font-semibold text-foreground text-center max-w-[80px]">
+                  {phase.title}
+                </span>
+              </div>
+
+              {/* Connecting Line */}
+              {index < phases.length - 1 && (
+                <div className="flex-1 h-0.5 bg-primary/30 mx-2" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Scrollable Cards */}
+      <div className="relative">
+        <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+          <div className="flex gap-4 min-w-max">
+            {phases.map((phase, phaseIndex) => {
+              const stepOffset = phases
+                .slice(0, phaseIndex)
+                .reduce((sum, p) => sum + p.steps.length, 0);
+
+              return (
+                <div
+                  key={phaseIndex}
+                  className="w-80 flex-shrink-0 border border-border rounded-lg p-5 bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
+                >
+                  {/* Card Header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">{phase.icon}</span>
+                    <div>
+                      <h4 className="text-lg font-semibold text-foreground">
+                        {phase.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {phase.steps.length} steps
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                    {phase.description}
+                  </p>
+
+                  {/* Steps */}
+                  <div className="space-y-2">
+                    {phase.steps.map((step, stepIndex) => (
+                      <div
+                        key={stepIndex}
+                        className="flex items-start gap-2 py-1"
+                      >
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary">
+                            {stepOffset + stepIndex + 1}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          {step}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Scroll Hint */}
+        <div className="text-center mt-4">
+          <p className="text-xs text-muted-foreground">
+            ← Scroll to see all phases →
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // UserFlow Component - Visual flow with arrows
 // ============================================
 interface UserFlowProps {
@@ -549,7 +754,7 @@ interface FigureProps {
 
 export function Figure({ src, alt, caption, width = "full" }: FigureProps) {
   const [isOpen, setIsOpen] = useState(false);
-
+  useEscapeKey(() => setIsOpen(false), isOpen !== false);
   const widthClasses = {
     sm: "max-w-md",
     md: "max-w-2xl",
@@ -615,7 +820,7 @@ interface ImageGalleryProps {
 
 export function ImageGallery({ images, columns = 3 }: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-
+  useEscapeKey(() => setSelectedImage(null), selectedImage !== null);
   const gridClasses = {
     2: "grid-cols-1 md:grid-cols-2",
     3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
@@ -632,7 +837,15 @@ export function ImageGallery({ images, columns = 3 }: ImageGalleryProps) {
             onClick={() => setSelectedImage(index)}
           >
             <div className="rounded-lg overflow-hidden border border-border shadow-md bg-muted hover:shadow-xl transition-all duration-300 hover:scale-105">
-              <img src={image.src} alt={image.alt} className="w-full h-auto" />
+              <div className="aspect-[4/3] w-full">
+                {" "}
+                {/* 4:3 ratio (good for galleries) */}
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
             {image.caption && (
               <p className="text-xs text-muted-foreground text-center">

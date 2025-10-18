@@ -81,7 +81,7 @@ export default function Hero() {
           className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-md hover:bg-primary/90 transition-colors cursor-pointer text-primary-foreground"
           onClick={scrollToAbout}
         >
-          <span className="text-xl">About Me</span>
+          <span className="text-xl">Learn More</span>
           <FaArrowDown className="h-6 w-6 animate-bounce " />
         </button>
       </div>

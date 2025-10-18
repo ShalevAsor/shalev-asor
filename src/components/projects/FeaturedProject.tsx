@@ -12,7 +12,7 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
   return (
     <article
       id={project.slug}
-      className="group scroll-mt-24 h-full bg-card border-2 border-border rounded-lg overflow-hidden hover:shadow-xl hover:shadow-primary/20 hover:border-primary/50 transition-all duration-300"
+      className="group scroll-mt-24 h-full bg-card border-2 border-border rounded-lg overflow-hidden hover:shadow-xl hover:shadow-primary/20 hover:border-primary/50 transition-all duration-300 flex flex-col"
     >
       {/* Featured Badge */}
       <div className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1.5 uppercase tracking-wider">
@@ -42,7 +42,7 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
       </Link>
 
       {/* Project Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-grow">
         {/* Title - Also clickable to detail page */}
         <Link href={project.permalink}>
           <h2 className="text-2xl font-bold mb-3 hover:text-primary transition-colors">
@@ -104,7 +104,7 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
         </div>
 
         {/* Metadata */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-4">
+        <div className="flex mt-auto items-center justify-between text-xs text-muted-foreground border-t border-border pt-4">
           <span>
             {new Date(project.date).toLocaleDateString("en-US", {
               year: "numeric",

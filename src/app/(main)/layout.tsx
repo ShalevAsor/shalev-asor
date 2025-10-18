@@ -7,10 +7,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // to columns layout
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 pt-16">
         {children}
 
         <Footer />

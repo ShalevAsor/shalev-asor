@@ -1,13 +1,536 @@
 ---
-title: "Full Authentication System"
+title: "Next.js Auth Starter"
 slug: "auth-system"
-description: "Complete auth with OAuth, JWT, and role-based access"
-date: "2023-09-10"
+description: "Production-ready authentication starter with 2FA, OAuth, rate limiting, and RBAC (Role Based Access)"
+date: "2025-01-05"
 published: true
 featured: false
-tags: ["fastapi", "python", "jwt"]
+tags:
+  ["nextjs", "typescript", "nextauth", "prisma", "postgresql", "authentication"]
+github: "https://github.com/ShalevAsor/Next.js-Auth-Starter"
+demo: "https://pinit-nu.vercel.app"
+image: ../../../public/images/projects/auth-system/main.png
 ---
 
 ## Overview
 
-Authentication system...
+Every project needs authentication, but building it from scratch is tedious and error-prone. This is a production-ready auth starter that handles everything: email/password, OAuth, 2FA, email verification, password reset, rate limiting, and role-based access control. Clone it, customize the branding, and you're ready to build your actual app.
+
+<Callout type="success" title="Starter Template Philosophy">
+  - **Don't rebuild auth every time** → Start with this, customize branding -
+  **Security built-in** → Rate limiting, 2FA, proper hashing, session management
+  - **All the flows** → Register, login, verify, reset, OAuth, 2FA -
+  **Type-safe** → End-to-end TypeScript with Prisma and Zod
+</Callout>
+
+**What makes this different:** Most auth tutorials skip the annoying parts - rate limiting UX, OAuth/credentials distinction, 2FA flow, email verification. This handles all of it. It's the auth system I copy into most of my new projects.
+
+<Stats>
+  <StatCard value="5/min" label="Rate Limit" trend="neutral" />
+  <StatCard value="2FA" label="Security" trend="neutral" />
+  <StatCard value="JWT" label="Session Strategy" trend="neutral" />
+  <StatCard value="2" label="OAuth Providers" trend="neutral" />
+</Stats>
+
+<ImageGallery
+  columns={4}
+  images={[
+    {
+      src: "/images/projects/auth-system/settings.png",
+      alt: "Settings Tab",
+      caption: "Settings Tab",
+    },
+    {
+      src: "/images/projects/auth-system/admin.png",
+      alt: "Admin Tab",
+      caption: "Admin Tab",
+    },
+    {
+      src: "/images/projects/auth-system/client.png",
+      alt: "Client Tab",
+      caption: "Client Tab",
+    },
+    {
+      src: "/images/projects/auth-system/server.png",
+      alt: "Server Tab",
+      caption: "Server Tab",
+    },
+  ]}
+/>
+
+## Tech Stack
+
+<Tabs defaultTab={0}>
+  <TabItem label="Framework">
+    <TechStack
+      items={[
+        "Next.js with App Router",
+        "TypeScript 5 for type safety",
+        "Tailwind CSS for styling",
+      ]}
+    />
+  </TabItem>
+  <TabItem label="Auth & Security">
+    <TechStack
+      items={[
+        "NextAuth.js v5 for authentication",
+        "prisma for database integration",
+        "bcryptjs for password hashing (10 rounds)",
+        "@upstash/ratelimit with sliding window algorithm",
+        "Upstash Redis for rate limit storage",
+        "JWT for stateless sessions",
+      ]}
+    />
+  </TabItem>
+  <TabItem label="Database & Forms">
+    <TechStack
+      items={[
+        "Prisma as type-safe ORM",
+        "PostgreSQL for production database",
+        "React Hook Form for form state",
+        "Zod for schema validation",
+        "Resend for transactional emails",
+      ]}
+    />
+  </TabItem>
+  <TabItem label="UI">
+    <TechStack
+      items={[
+        "shadcn/ui component library",
+        "Lucide React for icons",
+        "Sonner for toast notifications",
+      ]}
+    />
+  </TabItem>
+</Tabs>
+
+## Core Features
+
+<FeatureList>
+  <Feature title="Email/Password Authentication">
+    Complete login flow with all the security best practices.
+
+    **Features:**
+    - Registration with email verification
+    - Secure password hashing (bcrypt, 10 rounds)
+    - Login with comprehensive checks
+    - Password reset via email
+    - Email verification required before login
+
+    **Security Checks:**
+    - Rate limiting (5 attempts/minute per IP+email)
+    - Input validation with Zod
+    - OAuth compatibility (prevents password login for OAuth users)
+    - Proper error messages without leaking info
+
+  </Feature>
+
+  <Feature title="OAuth Integration">
+    Social login with Google and GitHub via NextAuth.
+
+    **Features:**
+    - Automatic account linking
+    - Profile syncing (name, email, avatar)
+    - Email verified on OAuth signup
+    - Prevents password changes for OAuth users
+
+    **How It Works:**
+    When you sign up with Google, the system creates an Account record linked to your User. The session includes an `isOAuth` flag that disables password-related features in settings.
+
+  </Feature>
+
+  <Feature title="Two-Factor Authentication">
+    Optional 2FA adds an extra security layer.
+
+    **Implementation:**
+    - 6-digit codes generated with crypto.randomInt()
+    - 15-minute expiration
+    - Email delivery via Resend
+    - One-time use tokens
+    - TwoFactorConfirmation table prevents reuse
+
+    **Flow:**
+    1. Enable 2FA in settings
+    2. On login, system checks if 2FA enabled
+    3. Generates code and emails it
+    4. Login form switches to code input
+    5. Code validated and deleted
+    6. Login completes normally
+
+  </Feature>
+
+  <Feature title="Email Verification">
+    All new accounts must verify their email before accessing protected content.
+
+    **Token System:**
+    - UUID-based tokens
+    - 1-hour expiration
+    - Automatic token replacement (one active per email)
+    - Delivered via Resend
+
+    **Email Change Protection:**
+    Changing email in settings resets `emailVerified` to null, logs you out, and requires re-verification. Prevents account takeover.
+
+  </Feature>
+
+  <Feature title="Rate Limiting with UX">
+    This is the cool part - most projects just block users. This one shows a countdown.
+
+    **Implementation:**
+    - Sliding window algorithm (5 attempts/minute)
+    - Per IP + email combo (can't spam different accounts from same IP)
+    - Upstash Redis for distributed rate limiting
+    - Error message includes remaining seconds
+
+    **The UX Innovation:**
+    Instead of "Too many attempts. Try again later," users see a live countdown timer. The form is disabled during countdown and auto-resets when complete.
+
+    ```typescript
+    // Parses "Try again in 45 seconds"
+    const seconds = parseInt(error.match(/(\d+) seconds/)?.[1] || "0")
+    setRateLimitSeconds(seconds)
+    // RateLimitCountdown component shows live timer
+    ```
+
+    Users appreciate knowing exactly when they can retry.
+
+  </Feature>
+
+  <Feature title="Role-Based Access Control">
+    Simple but effective RBAC with USER and ADMIN roles.
+
+    **Implementation:**
+    - Database-level role storage (Prisma enum)
+    - Middleware protection for admin routes
+    - RoleGate component for UI-level protection
+    - Server Action validation
+    - API route protection
+
+    **Admin Protection:**
+    ```tsx
+    <RoleGate allowedRole={UserRole.ADMIN}>
+      {/* Admin-only content */}
+    </RoleGate>
+    ```
+    Non-admins see "You don't have permission" message.
+
+  </Feature>
+
+  <Feature title="User Settings">
+    Comprehensive settings page for managing account.
+
+    **Configurable Fields:**
+    - Name
+    - Email (requires re-verification)
+    - Password (if not OAuth user)
+    - Two-Factor Authentication toggle
+
+    **Conditional Fields:**
+    OAuth users can't change email or password. The form automatically hides these fields based on session data.
+
+  </Feature>
+</FeatureList>
+
+## Architecture
+
+<Callout type="info" title="Layered Design">
+  Clean separation between presentation, application logic, and data access
+  makes the codebase maintainable and testable.
+</Callout>
+
+<FileTree>
+  {`auth-starter/
+├── src/
+│   ├── app/
+│   │   ├── (main)/              # Protected routes
+│   │   │   ├── settings/        # User settings page
+│   │   │   ├── admin/           # Admin-only page
+│   │   │   └── layout.tsx       # Protected layout
+│   │   ├── auth/                # Public auth routes
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   ├── reset/
+│   │   │   ├── new-password/
+│   │   │   └── new-verification/
+│   │   └── api/auth/[...nextauth]/ # NextAuth handlers
+│   ├── actions/                 # Server Actions
+│   │   └── auth/
+│   │       ├── login.ts         # Complete login flow
+│   │       ├── register.ts
+│   │       ├── reset.ts
+│   │       ├── new-password.ts
+│   │       ├── settings.ts
+│   │       └── logout.ts
+│   ├── components/
+│   │   ├── auth/
+│   │   │   ├── login-form.tsx
+│   │   │   ├── register-form.tsx
+│   │   │   ├── settings-form.tsx
+│   │   │   ├── user-button.tsx
+│   │   │   ├── role-gate.tsx
+│   │   │   └── rate-limit-countdown.tsx
+│   │   └── ui/                  # shadcn components
+│   ├── lib/
+│   │   ├── auth.ts              # NextAuth config
+│   │   ├── tokens.ts            # Token generation
+│   │   ├── mail.ts              # Email service
+│   │   └── rate-limit.ts        # Rate limiter
+│   ├── schemas/                 # Zod schemas
+│   ├── hooks/                   # Custom hooks
+│   └── middleware.ts            # Route protection
+└── prisma/
+    └── schema.prisma            # Database schema`}
+</FileTree>
+
+## Database Schema
+
+<Collapse title="Prisma Models">
+
+The schema is designed for flexibility and security.
+
+**User Model:**
+
+```prisma
+model User {
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  emailVerified         DateTime?
+  password              String?   // Nullable for OAuth
+  name                  String?
+  image                 String?
+  role                  UserRole  @default(USER)
+  isTwoFactorEnabled    Boolean   @default(false)
+  accounts              Account[]
+  twoFactorConfirmation TwoFactorConfirmation?
+}
+```
+
+**Token Tables:**
+
+- **VerificationToken** - Email verification (1h expiry)
+- **PasswordResetToken** - Password reset (1h expiry)
+- **TwoFactorToken** - 2FA codes (15min expiry)
+- **TwoFactorConfirmation** - Session validation for 2FA
+
+**Why Separate Token Tables?**
+Different token types have different lifetimes, use cases, and security requirements. Separating them makes the system more maintainable.
+
+**Account Model (OAuth):**
+
+```prisma
+model Account {
+  userId            String
+  user              User   @relation(fields: [userId], references: [id])
+  provider          String // google, github
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  expires_at        Int?
+  @@id([provider, providerAccountId])
+}
+```
+
+</Collapse>
+
+## Authentication Flows
+
+<UserFlowGrouped
+  title="Complete Auth Journeys"
+  phases={[
+    {
+      title: "Registration",
+      icon: "📝",
+      steps: [
+        "User fills registration form",
+        "Zod validates input client-side",
+        "Server Action checks if email exists",
+        "Password hashed with bcrypt (10 rounds)",
+        "User created with emailVerified: null",
+        "Verification token generated (UUID, 1h expiry)",
+        "Email sent via Resend with verification link",
+        "User clicks link → marks emailVerified",
+        "Can now log in",
+      ],
+    },
+    {
+      title: "Login with 2FA",
+      icon: "🔓",
+      steps: [
+        "User enters email and password",
+        "Rate limit check (5/min per IP+email)",
+        "Validate input with Zod",
+        "Check user exists and not OAuth-only",
+        "Verify email is verified",
+        "Compare password with bcrypt",
+        "If 2FA enabled, generate 6-digit code",
+        "Email code to user",
+        "Form switches to code input",
+        "User enters code",
+        "Validate code and expiration",
+        "Create TwoFactorConfirmation",
+        "Delete token",
+        "Create JWT session",
+        "Redirect to /settings",
+      ],
+    },
+    {
+      title: "Password Reset",
+      icon: "🔑",
+      steps: [
+        "User clicks 'Forgot password?'",
+        "Enters email address",
+        "System generates UUID token (1h expiry)",
+        "Email sent with reset link",
+        "User clicks link → /auth/new-password?token=xxx",
+        "Enters new password",
+        "Validates token expiration",
+        "Hash new password",
+        "Update user record",
+        "Delete token",
+        "Redirect to login",
+      ],
+    },
+    {
+      title: "OAuth Login",
+      icon: "🔗",
+      steps: [
+        "User clicks 'Continue with Google'",
+        "NextAuth redirects to Google OAuth",
+        "User approves",
+        "Google returns to callback",
+        "NextAuth creates/links Account",
+        "If new user, creates User with emailVerified: now",
+        "If existing user, links account",
+        "JWT session created with isOAuth: true",
+        "Redirect to /settings",
+      ],
+    },
+  ]}
+/>
+
+## Security Features
+
+<FeatureGrid>
+  <FeatureCard title="Password Security">
+    bcrypt with cost factor 10. Passwords never stored in plain text. Hashing
+    happens server-side only.
+  </FeatureCard>
+  <FeatureCard title="Session Management">
+    JWT strategy (stateless). HTTP-only secure cookies. Auto-refresh handled by
+    NextAuth. Custom callbacks enrich tokens with user data.
+  </FeatureCard>
+  <FeatureCard title="Input Validation">
+    Zod schemas validate both client and server-side. Prevents malformed data
+    from reaching database. Type-safe validation.
+  </FeatureCard>
+  <FeatureCard title="SQL Injection">
+    Prisma uses parameterized queries. Impossible to inject SQL through user
+    inputs.
+  </FeatureCard>
+  <FeatureCard title="CSRF Protection">
+    Built into NextAuth and Next.js Server Actions. All mutations protected
+    automatically.
+  </FeatureCard>
+  <FeatureCard title="Rate Limiting">
+    Sliding window algorithm prevents brute force. Distributed via Redis for
+    multi-instance support. Per-user and per-IP protection.
+  </FeatureCard>
+</FeatureGrid>
+
+## Middleware Protection
+
+<Collapse title="How Route Protection Works">
+
+The middleware (`src/middleware.ts`) runs on every request and decides if the user can access the route.
+
+**Route Categories:**
+
+1. **Public Routes:** `/`, `/auth/new-verification`
+   - Always accessible
+2. **Auth Routes:** `/auth/login`, `/auth/register`, etc.
+   - Redirect to `/settings` if already logged in
+3. **API Auth Routes:** `/api/auth/*`
+   - Pass through (handled by NextAuth)
+4. **Protected Routes:** Everything else
+   - Redirect to `/login?callbackUrl=...` if not logged in
+
+**Middleware Logic:**
+
+```typescript
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
+
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) return; // NextAuth handles
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return; // Allow access
+  }
+
+  if (!isLoggedIn && !isPublicRoute) {
+    let callbackUrl = nextUrl.pathname;
+    if (nextUrl.search) callbackUrl += nextUrl.search;
+
+    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
+    return Response.redirect(
+      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+    );
+  }
+
+  return; // Allow access
+});
+```
+
+After login, users are redirected to their original destination via the `callbackUrl` parameter.
+
+</Collapse>
+
+## Technical Challenges
+
+<Challenge
+  title="Challenge 1: Rate Limit UX"
+  problem="Users hate generic 'Too many attempts' errors with no indication of when they can retry. This creates frustration and support tickets."
+  solution="Built RateLimitCountdown component that parses the remaining seconds from the error message and displays a live countdown timer. The form is disabled during countdown and automatically re-enables when the timer hits zero. Users see exactly how long to wait."
+  result="Much better user experience. No more confused users. The countdown creates transparency and reduces frustration. Support tickets about 'locked accounts' dropped to zero."
+/>
+
+<Challenge
+  title="Challenge 2: OAuth vs Credentials"
+  problem="Users who sign up with OAuth shouldn't be able to set passwords. Users who sign up with email/password shouldn't see OAuth-specific UI. The system needs to differentiate."
+  solution="Added isOAuth flag to session (derived from Account existence). Settings form conditionally renders email/password fields only for non-OAuth users. Login action prevents password login for OAuth users with helpful error message."
+  result="Clear separation between auth methods. No confusion. OAuth users can't accidentally lock themselves out by setting a password."
+/>
+
+<Challenge
+  title="Challenge 3: Email Change Security"
+  problem="Allowing users to change email without re-verification opens account takeover risk. Attacker changes email, verifies it, and original owner is locked out."
+  solution="Email changes set emailVerified to null, triggering logout. New verification email sent to new address. User can't log back in until verified. Middleware blocks all protected routes until verified."
+  result="Secure email changes. Impossible to hijack accounts. Original owner retains access until new email is verified."
+/>
+
+<Challenge
+  title="Challenge 4: 2FA Multi-Step Flow"
+  problem="2FA requires multiple steps with state management. Form needs to switch from password entry to code entry. Tokens must be one-time use."
+  solution="Login action returns { twoFactor: true } instead of creating session. LoginForm component switches to code input state. TwoFactorConfirmation table ensures code is deleted after use. Clean state machine prevents replay attacks."
+  result="Smooth 2FA flow. No duplicate code usage. Clear UX with proper loading states. Secure against replay attacks."
+/>
+
+## Conclusion
+
+Authentication is one of those things you shouldn't build from scratch every time. It's tedious, error-prone, and time-consuming. This starter handles all the annoying parts so you can focus on your actual app.
+
+<Callout type="success" title="Production-Ready">
+  - **Security:** Rate limiting, 2FA, proper hashing, session management -
+  **UX:** Rate limit countdown, clear error messages, loading states -
+  **Maintainable:** Clean code, type-safe, well-documented - **Extensible:**
+  Easy to add more OAuth providers or customize flows
+</Callout>
+
+Clone it, change the colors, and start building your app. That's the whole point.

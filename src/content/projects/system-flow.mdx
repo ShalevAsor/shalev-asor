@@ -1,0 +1,856 @@
+---
+title: "System Flow"
+slug: "system-flow"
+description: "Interactive system architecture designer with real-time performance simulation and visual flow editor"
+date: "2025-05-20"
+published: true
+featured: true
+tags:
+  ["react", "typescript", "express", "mongodb", "simulation", "canvas", "vite"]
+github: "https://github.com/ShalevAsor/system-flow"
+demo: "https://system-flow.vercel.app/"
+image: ../../../public/images/projects/system-flow/main.png
+---
+
+## Overview
+
+I wanted to build something to help me study distributed systems for interviews. System Flow is basically a visual playground where you drag servers, databases, load balancers onto a canvas, connect them, and run a simulation to see how the architecture performs.
+
+The simulation engine is probably the most complex code I've written - 1595 lines of logic that models realistic distributed system behavior. Each component has dozens of properties that actually affect performance.
+
+<Callout type="success" title="What It Does">
+  - Drag and drop system components onto a canvas
+  - Configure 80+ properties per component (CPU, memory, protocols, etc.)
+  - Run simulations that show you where bottlenecks are
+  - 6 pre-built architecture templates to start from
+</Callout>
+
+Built it mainly for studying, but it's useful for anyone learning distributed systems or designing architectures.
+
+<Stats>
+  <StatCard value="5" label="Node Types" trend="neutral" />
+  <StatCard value="10" label="Connection Types" trend="neutral" />
+  <StatCard value="80+" label="Properties" trend="neutral" />
+  <StatCard value="100ms" label="Tick Rate" trend="up" />
+</Stats>
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/system-flow/library.png",
+      alt: "Library Page",
+      caption: "Library page - Showcase all templates created by the user",
+    },
+    {
+      src: "/images/projects/system-flow/clearBoard.png",
+      alt: "Canvas page",
+      caption: "Drag & Drop support",
+    },
+  ]}
+/>
+
+## Tech Stack
+
+<Tabs defaultTab={0}>
+  <TabItem label="Frontend">
+    <TechStack
+      title="Core Framework"
+      items={[
+        "Vite with React 19 with TypeScript in strict mode for maximum type safety",
+        "React Router DOM 7.2.0 for client-side routing with protected routes",
+        "Tailwind CSS for styling",
+      ]}
+    />
+    <TechStack
+      title="State Management"
+      items={[
+        "Zustand for lightweight, zero-boilerplate state management",
+        "Persist middleware for localStorage synchronization",
+        "Path-based property updates for deep nested state",
+        "Selective re-renders with Zustand selectors",
+      ]}
+    />
+    <TechStack
+      title="Data Fetching & Forms"
+      items={[
+        "Axios with custom interceptors for auth and error handling",
+        "React Query for server state caching",
+        "React Hook Form for performant form handling",
+        "Zod for runtime schema validation",
+      ]}
+    />
+    <TechStack
+      title="Visualization & UI"
+      items={[
+        "React Flow for interactive node-based editor",
+        "Recharts for real-time performance charts",
+        "Lucide React for consistent icon system",
+        "React Toastify for elegant notifications",
+      ]}
+    />
+  </TabItem>
+  <TabItem label="Backend">
+    <TechStack
+      title="Server & Database"
+      items={[
+        "Node.js with Express.js for REST API",
+        "TypeScript in strict mode for type safety",
+        "MongoDB with Mongoose ODM for flexible schema",
+      ]}
+    />
+    <TechStack
+      title="Authentication & Security"
+      items={[
+        "JWT (jsonwebtoken) for stateless session management",
+        "bcrypt for password hashing with 10 salt rounds",
+        "SHA-256 hashing for secure token storage",
+        "Helmet for HTTP security headers",
+        "CORS middleware for cross-origin resource sharing",
+      ]}
+    />
+    <TechStack
+      title="Email Service"
+      items={[
+        "Nodemailer for transactional emails",
+        "Ethereal (development) - Fake SMTP with preview URLs",
+        "SendGrid integration (production) - Reliable delivery",
+        "HTML email templates with branded styling",
+      ]}
+    />
+    <TechStack
+      title="Validation & Middleware"
+      items={[
+        "express-validator for request validation",
+        "Custom middleware chain for auth and error handling",
+        "Structured logging with custom logger",
+        "Global error handler with typed responses",
+      ]}
+    />
+  </TabItem>
+  <TabItem label="DevOps & Testing">
+    <TechStack
+      title="Testing"
+      items={[
+        "Jest for backend unit tests",
+        "Supertest for API endpoint testing",
+        "Vitest for frontend unit tests",
+        "50+ test suites across the stack",
+      ]}
+    />
+    <TechStack
+      title="Development & Deployment"
+      items={[
+        "Docker + Docker Compose for local MongoDB",
+        "GitHub Actions for CI/CD pipeline",
+        "ESLint + Prettier for code quality",
+        "Automated lint → test → typecheck → build pipeline",
+      ]}
+    />
+  </TabItem>
+</Tabs>
+
+## Project Architecture
+
+<Callout type="info" title="Separated Frontend & Backend">
+  Unlike my other projects, System Flow has completely separated frontend and
+  backend repos. The frontend talks to the backend via a REST API with JWT
+  authentication. This mirrors real-world microservices architecture.
+</Callout>
+
+<FileTree>
+  {`system-flow/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/         # Business logic
+│   │   │   ├── authController.ts    # 454 lines - Auth flows
+│   │   │   ├── flowController.ts    # CRUD operations
+│   │   │   └── profileController.ts
+│   │   ├── models/              # Mongoose schemas
+│   │   │   ├── User.ts              # Auth + verification
+│   │   │   └── Flow.ts              # Canvas state storage
+│   │   ├── routers/             # API routes
+│   │   │   ├── authRouter.ts        # /api/auth/*
+│   │   │   ├── flowRouter.ts        # /api/flows/*
+│   │   │   └── profileRouter.ts
+│   │   ├── middlewares/         # Request processing
+│   │   │   ├── authMiddleware.ts    # JWT validation
+│   │   │   ├── validationMiddleware.ts
+│   │   │   └── errorMiddleware.ts
+│   │   ├── services/            # External integrations
+│   │   │   └── emailService.ts      # Nodemailer wrapper
+│   │   ├── validations/         # express-validator rules
+│   │   ├── utils/               # Helpers
+│   │   │   ├── tokenUtils.ts        # SHA-256 hashing
+│   │   │   ├── logger.ts
+│   │   │   └── emailTemplates.ts
+│   │   ├── types/               # TypeScript definitions
+│   │   ├── config/              # Environment config
+│   │   └── lib/                 # Database connection
+│   └── package.json
+│
+└── frontend/
+    ├── src/
+    │   ├── pages/               # Route pages
+    │   │   ├── auth/                # Login, Register
+    │   │   ├── flowEditor/          # Main canvas
+    │   │   ├── flowLibrary/         # Saved flows
+    │   │   └── profile/
+    │   ├── components/
+    │   │   ├── flow/                # Node/edge components
+    │   │   │   ├── nodes/           # 5 custom node types
+    │   │   │   ├── edges/           # 10 edge types
+    │   │   │   ├── panels/          # Properties, simulation
+    │   │   │   └── ComponentsPanel.tsx
+    │   │   ├── routing/
+    │   │   │   └── ProtectedRoute.tsx
+    │   │   ├── layout/
+    │   │   └── ui/                  # Reusable UI
+    │   ├── store/                   # Zustand stores
+    │   │   ├── authStore.ts         # Auth state
+    │   │   ├── flowStore.ts         # 342 lines - Canvas state
+    │   │   └── simulationStore.ts   # 322 lines - Sim engine
+    │   ├── services/
+    │   │   ├── api/
+    │   │   │   ├── apiClient.ts     # 193 lines - Error handling
+    │   │   │   ├── authService.ts
+    │   │   │   └── flowService.ts
+    │   │   └── simulation/
+    │   │       └── requestProcessor.ts  # 1595 lines!! 🤯
+    │   ├── hooks/                   # Custom hooks
+    │   │   ├── useUser.ts
+    │   │   ├── useFlows.ts
+    │   │   └── useEdgeRequests.ts
+    │   ├── types/
+    │   │   ├── flow/
+    │   │   │   ├── nodeTypes.ts     # 347 lines - Type defs
+    │   │   │   └── edgeTypes.ts     # 379 lines
+    │   │   └── api/
+    │   ├── utils/
+    │   │   ├── flow/
+    │   │   │   └── templateUtils.ts # Tree layout algorithm
+    │   │   └── formUtils.ts
+    │   ├── constants/
+    │   │   └── architectureTemplateDefaults.ts  # 6 templates
+    │   └── schemas/                 # Zod schemas
+    └── package.json`}
+</FileTree>
+
+## Core Features
+
+<FeatureList>
+  <Feature title="Complete Authentication System">
+    Built from scratch with no third-party auth services. Includes everything
+    you'd expect from a production app: **Registration Flow:** - Email +
+    password signup - Password strength validation - bcrypt hashing with 10 salt
+    rounds - Verification email sent automatically **Email Verification:** -
+    Cryptographically secure 32-byte tokens - SHA-256 hashing before database
+    storage - 24-hour expiration - Resend verification option **Login &
+    Security:** - Email verified check on login - JWT generation with 1-hour
+    expiration - Secure token storage in localStorage - Automatic logout on
+    token expiry **Password Reset:** - Request reset link via email - 1-hour
+    expiration for security - Token validation before reset - New password
+    re-hashing **Why build from scratch?** I wanted to understand auth deeply,
+    not just plug in Auth0. This taught me about token management, email flows,
+    and security best practices.
+  </Feature>
+  <Feature title="Interactive Flow Editor Canvas">
+    The heart of the application - a drag-and-drop visual editor powered by
+    React Flow. This is where users design their system architectures. **5
+    Custom Node Types:** - **Server** - Compute resources (VMs, containers,
+    serverless) - **Database** - SQL/NoSQL data storage - **LoadBalancer** -
+    Traffic distribution - **Client** - User endpoints (web, mobile, IoT) -
+    **Cache** - Performance optimization (Redis) **10 Connection Types:** -
+    HTTP, WebSocket, gRPC (modern protocols) - TCP, UDP (transport layer) -
+    MQTT, AMQP, Kafka (message queues) - EventStream, Database (specialized)
+    **Canvas Features:** - Drag nodes from palette onto canvas - Connect nodes
+    with different edge types - Real-time property editing via side panel -
+    MiniMap for navigation - Zoom and pan controls - Background grid for
+    alignment - Keyboard shortcuts for power users
+  </Feature>
+  <Feature title="Deep Component Configuration">
+    This is where System Flow shines. Each component has dozens of configurable
+    properties that actually affect simulation behavior. **Server Nodes (80+
+    properties!):** - **Compute:** CPU cores, CPU speed, RAM, storage, GPU
+    support - **Deployment:** Instances, auto-scaling, deployment type
+    (VM/Container/Serverless) - **Performance:** Max requests/sec, concurrency
+    model, request queue size - **Reliability:** Health checks, restart policy,
+    failure probability - **Security:** Authentication required, supported
+    protocols - **Region:** Geographic location for latency simulation
+    **Database Nodes (30+ properties):** - **Type:** SQL vs NoSQL, specific
+    database engine - **Capacity:** Storage size, max connections, IOPS -
+    **Replication:** Strategy (master-slave, multi-master), replication factor -
+    **Backup:** Strategy (none, daily, continuous) - **Performance:** Query
+    complexity, average latency **LoadBalancer Nodes:** - **Algorithm:** Round
+    Robin, Least Connections, IP Hash, Weighted Round Robin - **SSL:**
+    Termination, certificate management - **Health Checks:** Interval, timeout,
+    healthy/unhealthy thresholds - **High Availability:** Active-active vs
+    active-passive **Edge Properties (varies by type):** - Communication
+    patterns (sync, async, pub-sub, streaming) - Performance (latency,
+    bandwidth, throughput) - Reliability (retry strategies, circuit breakers) -
+    Security (encryption, authentication) - Protocol-specific config (HTTP
+    version, WebSocket compression, gRPC streaming) Every property affects the
+    simulation! This isn't just visual - it's functional.
+  </Feature>
+  <Feature title="Architecture Template Library">
+    Why start from scratch? System Flow includes 6 pre-built architecture
+    patterns that you can drag onto the canvas. **Available Templates:** -
+    **Microservices Architecture** - Multiple services with API gateway -
+    **Monolithic Architecture** - Single server with database - **Serverless
+    Architecture** - Lambda functions with managed services - **Event-Driven
+    Architecture** - Message queues and event processors - **Multi-tier
+    Architecture** - Classic web → app → database layers - **Distributed Cache
+    Pattern** - Cache layer in front of database **Template Features:** -
+    Automatic node positioning with tree layout algorithm - Pre-configured
+    connections between components - Sensible default properties - Drag-and-drop
+    to canvas - Instantly runnable simulations **Tree Layout Algorithm:** When
+    you drag a template, the system automatically calculates positions using BFS
+    traversal: 1. Build parent-child relationships from edges 2. Find root nodes
+    (no incoming edges) 3. Assign each node to a level (distance from root) 4.
+    Calculate positions: 350px horizontal spacing, 200px vertical spacing 5.
+    Center the layout around the drop point This prevents node overlap and
+    creates a clean, hierarchical layout.
+  </Feature>
+  <Feature title="Flow Persistence & Management">
+    Save your designs to the cloud and access them from anywhere. **Backend
+    Storage:** - MongoDB stores complete flow state - Nodes array with all
+    properties - Edges array with connections - Metadata (name, description,
+    timestamps) - User reference for multi-tenancy **Flow Library:** - Grid view
+    of all saved flows - Filter and search capabilities - Quick load to editor -
+    Delete with confirmation - Last modified timestamps **Export/Import:** -
+    Export flow as JSON - Import from file - Share with team members (future
+    feature)
+  </Feature>
+  <Feature title="Real-time Performance Simulation">
+    This is the killer feature. The simulation engine analyzes your architecture
+    and shows you how it performs under load. It's like a crystal ball for
+    system design. **Simulation Engine:** - Runs at 100ms tick intervals -
+    Generates requests from client nodes - Routes requests through your
+    architecture - Tracks component utilization - Identifies bottlenecks -
+    Calculates performance metrics **Request Lifecycle:** 1. Client generates
+    request based on pattern (steady, bursty, periodic) 2. Request routes to
+    first connected node 3. Each node processes based on its properties 4.
+    Processing time calculated from CPU, memory, current load 5. Request moves
+    to next node in path 6. Edge capacity affects transmission time 7. Request
+    completes or fails 8. Metrics updated in real-time **What Gets Simulated:**
+    - **Node Overload:** When utilization > 80%, requests start failing - **Edge
+    Congestion:** When bandwidth saturated, 20% packet loss - **Failures:**
+    Random failures based on component reliability - **Retries:** Exponential
+    backoff with configurable max attempts - **Circuit Breakers:** Auto-disable
+    failing components - **Cache Hit/Miss:** Cache effectiveness based on hit
+    rate - **Load Balancing:** Different algorithms distribute load differently
+    - **Auto-scaling:** Servers scale up when overloaded - **Database Queries:**
+    Query complexity affects processing time **Metrics Tracked:** - Active
+    requests (in-flight right now) - Completed requests (successful) - Failed
+    requests (with failure reasons) - Average response time (weighted) - Average
+    request size (KB) - Component utilization (per node and edge) - Time-series
+    history for charts **Visualization:** - Animated edges show data flow - Node
+    colors indicate utilization (green → yellow → red) - Real-time metric
+    dashboard - Interactive Recharts graphs - Bottleneck highlighting
+  </Feature>
+  <Feature title="Security & Protected Routes">
+    Security implemented at every layer of the stack. **Backend Security:** -
+    JWT middleware validates all protected routes - Token extraction from
+    Authorization header - User context injection into requests - Helmet
+    middleware for HTTP security headers - CORS configured for frontend origin -
+    Input validation with express-validator - SQL injection prevention via
+    Mongoose - Password requirements enforced **Frontend Security:** - Protected
+    routes redirect to login if unauthenticated - Axios interceptors add JWT to
+    all requests - Automatic logout on 401 responses - Token refresh mechanism
+    (future) - XSS prevention via React's auto-escaping - Secure localStorage
+    for token storage **Token Security:** - Verification tokens hashed with
+    SHA-256 before storage - Never store raw tokens in database - Configurable
+    expiration times - One-time use tokens for password reset
+  </Feature>
+</FeatureList>
+
+## The Beast: Simulation Engine
+
+<Collapse title="Request Processor Deep Dive">
+
+The `requestProcessor.ts` file is the most complex piece of code in the project. It's 1595 lines of pure simulation logic that models realistic distributed system behavior.
+
+**Why so complex?** Because realistic simulation is HARD. You can't just say "process request" - you need to consider:
+
+<TechStack
+  items={[
+    "Resource availability (CPU, memory, network)",
+    "Current utilization and overload conditions",
+    "Failure probabilities that vary by component type",
+    "Retry logic with exponential backoff",
+    "Circuit breaker patterns",
+    "Cache hit rates and eviction policies",
+    "Load balancer algorithms (4 different types)",
+    "Database query complexity",
+    "Network latency and packet loss",
+    "Auto-scaling triggers",
+    "Concurrent request handling",
+    "Protocol-specific overhead (HTTP/2 vs HTTP/1.1, etc.)",
+  ]}
+/>
+
+**Node Utilization Algorithm:**
+
+Each node type has custom utilization calculations. For example, servers consider:
+
+```typescript
+calculateServerUtilization(request, server) {
+  let impact = request.sizeKB / 50000; // Base impact from request size
+
+  // CPU impact
+  impact *= (1 / server.cpuCores); // More cores = less impact
+  impact /= (server.cpuSpeed / 2.5); // Faster CPU = less impact
+
+  // Concurrency impact
+  impact *= (100 / server.maxConcurrentRequests);
+
+  // Instance distribution
+  if (server.instances > 1) {
+    impact /= server.instances; // Load spread across instances
+  }
+
+  return Math.min(impact, 0.1); // Cap at 10% per request
+}
+```
+
+**Overload Detection:**
+
+The system dynamically adjusts overload thresholds based on component configuration:
+
+```typescript
+isNodeOverloaded(node, utilization) {
+  let threshold = 0.8; // Base 80%
+
+  if (node.autoScaling) threshold += 0.05; // Auto-scaling helps
+  if (node.memory > 0) threshold += node.memory / 1000; // More RAM helps
+  if (node.cpuCores >= 4) threshold += node.cpuCores / 100; // More CPUs help
+
+  return utilization > threshold;
+}
+```
+
+**Failure Modeling:**
+
+Failures aren't random - they're based on realistic probabilities:
+
+```typescript
+calculateFailureProbability(node) {
+  let baseRate = 0.001; // 0.1% base failure rate
+
+  if (node.restartPolicy === 'Always') baseRate *= 0.5; // Restarts reduce failures
+  if (node.deploymentType === 'VM') baseRate *= 0.8; // VMs more stable than containers
+  if (node.highAvailability) baseRate *= 0.6; // HA setup is more reliable
+  if (node.failoverStrategy === 'Active-Active') baseRate *= 0.5; // Redundancy helps
+
+  return baseRate;
+}
+```
+
+**Cache Simulation:**
+
+Cache nodes track hit rates and affect request processing:
+
+```typescript
+processCacheRequest(request, cache) {
+  const hitRate = cache.hitRate / 100;
+  const isHit = Math.random() < hitRate;
+
+  if (isHit) {
+    // Cache hit - fast response
+    request.processingTime = cache.averageLatency;
+    request.completed = true;
+  } else {
+    // Cache miss - route to database
+    routeToNextNode(request, cache);
+  }
+}
+```
+
+**Protocol-Specific Overhead:**
+
+Different protocols have different performance characteristics:
+
+```typescript
+// HTTP/2 is 20% more efficient than HTTP/1.1
+if (edge.httpVersion === "HTTP/2") impact *= 0.8;
+
+// WebSocket high message rates increase load
+if (edge.messageRatePerSecond > 10) {
+  impact *= 1 + Math.min(edge.messageRatePerSecond / 100, 1);
+}
+
+// TCP Nagle's algorithm for small packets
+if (edge.nagleAlgorithmEnabled && requestSize < 5) {
+  impact *= 0.8; // Batching reduces overhead
+}
+```
+
+**Load Balancer Algorithms:**
+
+Four different algorithms, each with unique behavior:
+
+- **Round Robin:** Sequential distribution, simplest
+- **Least Connections:** Routes to server with fewest active requests
+- **IP Hash:** Same client always goes to same server (session affinity)
+- **Weighted Round Robin:** More capable servers get more requests
+
+The result? A simulation that feels real. When you add a load balancer, performance actually improves. When you add cache, database load decreases. When you overload a server, it starts dropping requests.
+
+</Collapse>
+
+## Authentication Flow
+
+<UserFlowGrouped
+  title="Complete Auth Journey"
+  phases={[
+    {
+      title: "Registration",
+      icon: "📝",
+      steps: [
+        "User enters email and password",
+        "Frontend validates with Zod schema",
+        "POST /api/auth/register sent to backend",
+        "Backend validates with express-validator",
+        "Check if email already exists in database",
+        "Hash password with bcrypt (10 salt rounds)",
+        "Generate 32-byte verification token",
+        "Hash token with SHA-256 for storage",
+        "Save user to MongoDB",
+        "Send verification email with raw token",
+        "Return success response",
+      ],
+    },
+    {
+      title: "Email Verification",
+      icon: "✉️",
+      steps: [
+        "User clicks verification link in email",
+        "GET /api/auth/verify-email?token=xxx",
+        "Backend hashes incoming token with SHA-256",
+        "Query database for matching hash",
+        "Check if token expired (24h limit)",
+        "Mark user email as verified",
+        "Clear verification token from database",
+        "Send welcome email",
+        "Redirect to login page",
+      ],
+    },
+    {
+      title: "Login",
+      icon: "🔓",
+      steps: [
+        "User enters email and password",
+        "POST /api/auth/login",
+        "Find user by email",
+        "Compare password with bcrypt",
+        "Check if email is verified",
+        "Generate JWT token (1h expiration)",
+        "Return user data + token",
+        "Frontend stores token in localStorage",
+        "Axios interceptor adds token to future requests",
+        "Navigate to flow library",
+      ],
+    },
+    {
+      title: "Protected Requests",
+      icon: "🛡️",
+      steps: [
+        "User tries to access protected route",
+        "Request sent with Authorization: Bearer <token>",
+        "tokenExtractor middleware parses header",
+        "userExtractor middleware verifies JWT",
+        "Query User model by decoded ID",
+        "Inject user into req.user",
+        "Controller accesses authenticated user",
+        "Return user-specific data",
+      ],
+    },
+  ]}
+/>
+
+## Simulation Workflow
+
+<UserFlowGrouped
+  phases={[
+    {
+      title: "Design Architecture",
+      steps: [
+        "Open flow editor (empty canvas)",
+        "Drag nodes from components palette",
+        "Position nodes on canvas",
+        "Connect nodes with edges",
+        "Select edge types (HTTP, WebSocket, etc.)",
+        "Configure node properties via side panel",
+        "Add more nodes to complete architecture",
+        "Save flow to database",
+      ],
+    },
+    {
+      title: "Load Template (Alternative)",
+      steps: [
+        "Open template library",
+        "Drag template onto canvas",
+        "Tree layout algorithm calculates positions",
+        "All nodes and edges instantiated",
+        "Review default configurations",
+        "Customize properties as needed",
+      ],
+    },
+    {
+      title: "Configure Simulation",
+      steps: [
+        "Open simulation panel",
+        "Set number of concurrent users",
+        "Choose request pattern (steady/bursty/periodic)",
+        "Set think time between requests",
+        "Configure request size distribution",
+        "Set simulation duration",
+        "Optionally enable failure simulation",
+      ],
+    },
+    {
+      title: "Run Simulation",
+      steps: [
+        "Click 'Start Simulation'",
+        "Simulation store initializes",
+        "100ms tick timer starts",
+        "Client nodes begin generating requests",
+        "Request processor routes traffic",
+        "Utilization tracked per component",
+        "Metrics updated in real-time",
+        "Charts render performance data",
+        "Edges animate to show flow",
+        "Nodes change color based on load",
+      ],
+    },
+    {
+      title: "Analyze Results",
+      steps: [
+        "Review active requests graph",
+        "Check response time trends",
+        "Identify bottlenecks (red nodes)",
+        "See failure rate by component",
+        "Analyze utilization distribution",
+        "Stop simulation",
+        "Modify architecture based on insights",
+        "Re-run simulation to compare",
+      ],
+    },
+
+]}
+/>
+
+## Technical Challenges & Solutions
+
+<Challenge
+  title="Challenge 1: State Management Was a Nightmare"
+  problem="The canvas can have 50+ nodes, each with 80+ properties. Started with useState - every property change re-rendered the entire canvas. Laggy, unusable. React Flow has its own state that needs to sync with my app state. Was a mess."
+  solution="Switched to Zustand with path-based updates. Instead of replacing the whole node, I update just the property I need (like 'data.cpuCores'). Created selector hooks so components only re-render when their specific slice of data changes. Split canvas state from simulation state so the simulation running doesn't affect the editor."
+  result="60fps even with 50 nodes. Property changes are instant. The simulation can tick 10 times per second and the canvas doesn't care."
+/>
+
+<Challenge
+  title="Challenge 2: Email Testing During Development"
+  problem="Needed to test email verification but didn't want to spam my own inbox or set up SendGrid just for local dev. But I also needed to actually see the emails to make sure they worked."
+  solution="Built an EmailService that detects the environment. In development, it creates an Ethereal fake SMTP account and logs a preview URL to the console. In production, uses SendGrid. Same API either way - the code doesn't care which transporter it's using."
+  result="Can test email flows instantly during development by clicking the preview link. No spam, no cost. Production just works with SendGrid."
+/>
+
+<Challenge
+  title="Challenge 3: Templates Needed Smart Layouts"
+  problem="I wanted pre-built templates, but if I hard-code positions, they only work in one spot on the canvas. Templates have different shapes - some are wide, some are deep. Manually positioning everything would be a pain."
+  solution="Built a tree layout algorithm using BFS. It figures out parent-child relationships from the edges, finds root nodes, assigns levels, then calculates positions with 350px horizontal and 200px vertical spacing. Centers the whole thing around wherever you drop it."
+  result="Drop a template anywhere and it looks clean. No overlaps. Adding new templates is easy - just define the components and connections, layout handles itself."
+/>
+
+<Challenge
+  title="Challenge 4: Making the Simulation Feel Real"
+  problem="My first version was too simple - all requests processed in constant time, nothing ever failed, no congestion. Useless for actually understanding system behavior. Real systems have overload, failures, retry logic, cache effects, network issues."
+  solution="Spent weeks building a realistic request processor - 1595 lines. Each component type has its own utilization formula based on properties. Failure rates change based on configuration. Overload thresholds are dynamic. Different protocols have different overhead. Load balancers actually use their configured algorithm."
+  result="Now it feels real. Add a cache and watch database load drop. Overload a server and see requests fail. Load balancers actually balance. You can design an architecture, spot the bottleneck, fix it, and see the improvement. This is why people use it."
+/>
+
+<Challenge
+  title="Challenge 5: Error Messages That Actually Help"
+  problem="API calls fail in different ways - timeout, server error, validation, auth failure. Just showing 'Request failed' is useless. Users need to know what actually went wrong."
+  solution="Built an error system with 15+ specific types. Axios interceptor catches errors and figures out what kind it is based on status code and message. Maps each to a helpful user message. Auto-logout on 401. Everything follows the same error shape."
+  result="Users see 'Email not verified. Check your inbox' instead of 'Error 403'. Expired tokens log you out automatically. Makes debugging way easier."
+/>
+
+<Challenge
+  title="Challenge 6: Token Management Without Thinking About It"
+  problem="JWTs need to go in every API request. Manually adding headers everywhere is tedious. Tokens expire and cause 401 errors. Logging out needs to clear tokens. Multiple tabs need to stay synced."
+  solution="Axios interceptors automatically inject the JWT from Zustand into the Authorization header. Response interceptor catches 401s and logs you out. Zustand's persist middleware syncs to localStorage so tokens survive page refreshes and work across tabs."
+  result="The rest of the app doesn't think about auth. Tokens are just there. Expired tokens = automatic logout. Open another tab and you're still logged in."
+/>
+
+## Performance Optimizations
+
+<FeatureGrid>
+  <FeatureCard title="Selective Re-renders">
+    Zustand selectors ensure components only re-render when their specific data
+    changes. The simulation can update metrics 10 times per second without
+    affecting the properties panel.
+  </FeatureCard>
+  <FeatureCard title="React.memo">
+    Expensive components like node renderers are wrapped in React.memo to
+    prevent unnecessary re-renders when parent state changes but props remain
+    the same.
+  </FeatureCard>
+  <FeatureCard title="useMemo & useCallback">
+    Computed values are memoized with useMemo. Event handlers are wrapped in
+    useCallback to maintain referential equality across renders.
+  </FeatureCard>
+  <FeatureCard title="Vite Code Splitting">
+    Route-based code splitting ensures users only download code for the pages
+    they visit. React.lazy() splits heavy components like the flow editor.
+  </FeatureCard>
+  <FeatureCard title="React Query Caching">
+    Server data is cached aggressively with React Query. Flows are cached for 5
+    minutes. User profile is cached until logout. Reduces API calls by 70%.
+  </FeatureCard>
+  <FeatureCard title="Simulation Throttling">
+    During simulation, metric updates are throttled to prevent overwhelming the
+    charts. History is limited to last 100 data points to prevent memory leaks.
+  </FeatureCard>
+</FeatureGrid>
+
+## Database Schema
+
+<Collapse title="MongoDB Models">
+
+**User Model:**
+
+```typescript
+{
+  email: string (unique, required),
+  password: string (hashed with bcrypt),
+  emailVerified: boolean (default: false),
+
+  // Email verification
+  emailVerificationToken: string (SHA-256 hashed),
+  emailVerificationExpires: Date,
+
+  // Password reset
+  passwordResetToken: string (SHA-256 hashed),
+  passwordResetExpires: Date,
+
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Security Features:**
+
+- Passwords never stored in plain text (bcrypt, 10 rounds)
+- Tokens hashed with SHA-256 before storage
+- Token expiration enforced in queries
+- Password field excluded from JSON responses
+
+**Flow Model:**
+
+```typescript
+{
+  name: string (required),
+  description: string,
+
+  // Canvas state
+  nodes: [
+    {
+      id: string,
+      type: NodeType,
+      position: { x: number, y: number },
+      data: Mixed (all node properties)
+    }
+  ],
+
+  edges: [
+    {
+      id: string,
+      source: string,
+      target: string,
+      type: EdgeType,
+      data: Mixed (all edge properties)
+    }
+  ],
+
+  userId: ObjectId (ref: 'User'),
+
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+**Why Schema.Types.Mixed?**
+Node and edge data structures vary wildly by type. Servers have 80+ properties, databases have 30+, etc. Using Mixed gives us flexibility without defining 5 different schemas.
+
+</Collapse>
+
+## Testing Strategy
+
+<Callout type="info" title="50+ Test Suites">
+  Both frontend and backend have comprehensive test coverage. Tests run
+  automatically in CI/CD pipeline before deployment.
+</Callout>
+
+**Backend Tests (Jest):**
+
+- `authController.test.ts` - All 6 auth flows
+- `flowController.test.ts` - CRUD operations
+- `emailService.test.ts` - Email sending with mocks
+- `User.test.ts` - Model validation and methods
+- `tokenUtils.test.ts` - Token generation and hashing
+- `errorMiddleware.test.ts` - Error handling
+
+**Frontend Tests (Vitest + React Testing Library):**
+
+- Component tests for all UI elements
+- Auth flow integration tests
+- API service tests with MSW mocks
+- Store tests for Zustand stores
+- Utility function tests
+- Form validation tests
+
+**CI/CD Pipeline (GitHub Actions):**
+
+```yaml
+Backend: → Install dependencies
+  → Run ESLint
+  → Run Jest tests
+  → TypeScript typecheck
+  → Build
+
+Frontend: → Install dependencies
+  → Run Vitest tests
+  → TypeScript typecheck
+  → Build for production
+```
+
+## Learning Outcomes
+
+<FeatureGrid>
+  <FeatureCard title="Full-Stack Separation">
+    Learned how to properly separate frontend and backend concerns with a REST
+    API. Understood CORS, authentication middleware, and API design patterns.
+  </FeatureCard>
+  <FeatureCard title="State Management Mastery">
+    Zustand taught me lightweight state management without Redux boilerplate.
+    Path-based updates, persist middleware, and selective subscriptions.
+  </FeatureCard>
+  <FeatureCard title="Complex Algorithms">
+    Built a tree layout algorithm from scratch using BFS. Implemented realistic
+    simulation physics with utilization calculations and failure modeling.
+  </FeatureCard>
+  <FeatureCard title="React Flow Integration">
+    Mastered React Flow for node-based editors. Custom nodes, custom edges,
+    event handling, and state synchronization.
+  </FeatureCard>
+  <FeatureCard title="Auth From Scratch">
+    Built complete authentication system without third-party services. JWT,
+    bcrypt, token management, email verification, password reset.
+  </FeatureCard>
+  <FeatureCard title="Error Handling">
+    Designed comprehensive error handling system with typed errors,
+    interceptors, and user-friendly messages across the stack.
+  </FeatureCard>
+</FeatureGrid>

@@ -13,13 +13,20 @@ export default function ProjectsPage() {
   // Filter only published projects and sort by date (newest first)
   const publishedProjects = projects
     .filter((project) => project.published)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .sort((a, b) => {
+      // First, sort by featured (featured items come first)
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+
+      // If both have the same featured status, sort by date (newest first)
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 
   // Separate featured projects
   const featuredProjects = publishedProjects.filter((p) => p.featured);
 
   return (
-    <div className="min-h-screen py-12 px-4">
+    <div className="min-h-screen py-12 px-4 mt-6 ">
       <div className="container mx-auto max-w-7xl">
         {/* Main Layout: Index Sidebar + Content */}
         <div className="flex gap-8 relative">

@@ -1,291 +1,854 @@
 ---
 title: "TaleByYou"
 slug: "talebyyou"
-description: "AI-powered platform for creating personalized children's books with paying customers"
-date: "2024-01-15"
+description: "AI-powered ecommerce platform for creating personalized children's storybooks with custom characters and print-on-demand delivery"
+date: "2025-07-15"
 published: true
 featured: true
-tags: ["nextjs", "typescript", "react", "fastapi", "python", "ai"]
-github: "https://github.com/yourusername/talebyyou"
-demo: "https://talebyyou.com"
-image: ../../../public/images/profile/shalev.jpg
+tags:
+  [
+    "nextjs",
+    "typescript",
+    "react",
+    "ai",
+    "prisma",
+    "postgresql",
+    "ecommerce",
+    "shadcn/ui",
+    "react query",
+    "zustand",
+    "clerk",
+    "webhooks",
+    "REST API",
+  ]
+github: "https://github.com/ShalevAsor/talebyyou"
+demo: "https://www.talebyyou.com"
+image: ../../../public/images/projects/talebyyou/main.png
 ---
 
 ## Overview
 
-TaleByYou is an AI-powered platform that creates personalized children's books. Parents can customize stories featuring their own kids as the main characters, complete with custom illustrations.
+This is my first real product with actual paying customers. The idea: parents can create custom storybooks where their kid is the main character. Not just inserting a name - the child actually appears in every illustration, looking like themselves.
 
-<Callout type="success" title="Real Product with Paying Customers">
-  This isn't just a side project - TaleByYou has 500+ active users across 15
-  countries and generates consistent monthly revenue.
+The hardest part was getting AI to generate consistent characters across 20+ pages. Tried a bunch of different approaches before landing on Leonardo AI's Character Reference feature. Now you upload one photo and the AI uses it as reference for every page.
+
+<Callout type="success" title="What Makes It Work">
+  - Upload one photo → AI keeps the character looking the same across all pages
+  - Order physical hardcover books or just get the digital PDF
+  - No account needed to start - create as guest, register when ready
+  - Full ecommerce: PayPal checkout, print-on-demand via Lulu, automated fulfillment
 </Callout>
 
-## Technology Stack
+Built for parents, grandparents, anyone buying gifts for kids ages 2-10. The books actually get printed and shipped worldwide.
 
-<Collapse title="Frontend Technologies">
+<Stats>
+  <StatCard value="20+" label="Book Templates" trend="neutral" />
+  <StatCard value="3" label="Images per Page" trend="neutral" />
+  <StatCard value="Custom" label="Full Customization" trend="neutral" />
+  <StatCard value="7 Days" label="E-book Access" trend="neutral" />
+</Stats>
 
-<TechStack
+## Tech Stack
+
+<Tabs defaultTab={0}>
+  <TabItem label="Frontend">
+    
+<TechStack 
   title="Core Framework"
   items={[
-    "Next.js 14 with App Router for server and client components",
-    "TypeScript for type safety and better developer experience",
-    "Tailwind CSS for responsive styling",
-    "Zustand for global state management",
+    "Next.js 15 with App Router and React for modern server/client architecture",
+    "TypeScript in strict mode for complete type safety",
+    "Tailwind CSS 4 with custom animations and design system",
+    "shadcn/ui for accessible components",
+    "Framer Motion for smooth animations and transitions"
+  ]}
+/>
+
+<TechStack
+  title="Interactive Features"
+  items={[
+    "React Hook Form + Zod for validated form handling",
+    "React Image Crop & React Easy Crop for photo editing",
+    "Embla Carousel, Swiper, React Slick for galleries",
+    "React Pageflip for interactive book preview",
+    "Zustand for client state management",
   ]}
 />
 
 <TechStack
   title="UI Components"
   items={[
-    "Radix UI for accessible primitives",
-    "Framer Motion for animations",
-    "React Hook Form for form handling",
-    "Zod for validation",
+    "Lucide React for consistent iconography",
+    "Custom shadcn/ui components built on Radix primitives",
+    "Responsive design with mobile-first approach",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="Backend">
+    
+<TechStack 
+  title="Server & Database"
+  items={[
+    "Next.js Server Actions for type-safe API layer",
+    "PostgreSQL with Prisma ORM for data modeling",
+    "Prisma Accelerate for connection pooling",
+    "AWS S3 for file storage (images, PDFs)",
+    "Zod for server side validations"
+  ]}
+/>
+
+<TechStack
+  title="Authentication & Email"
+  items={[
+    "Clerk for OAuth, 2FA, and session management",
+    "Webhook integration for user sync",
+    "Nodemailer for transactional emails (order confirmations, download links)",
+    "Guest session support via encrypted cookies",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="AI & Services">
+    
+<TechStack 
+  title="AI Image Generation"
+  items={[
+    "Leonardo AI API for character-consistent image generation",
+    "Character Reference ControlNet (preprocessor 133) for consistency",
+    "Webhook-based async processing for 20-60 second generations",
+    "Generates 3 variations per image for user selection",
+    "Cost tracking per generation (API credits)"
+  ]}
+/>
+
+<TechStack
+  title="Print-on-Demand"
+  items={[
+    "Lulu xPress API for professional book printing",
+    "PDF validation, Address validation, cost calculation, and job submission",
+    "Real-time tracking via webhooks (CREATED → SHIPPED)",
+    "8.5x11 premium case wrap hardcover format",
+    "Global shipping with 5 speed options",
+  ]}
+/>
+
+<TechStack
+  title="E-commerce"
+  items={[
+    "PayPal integration (sandbox + production)",
+    "Dynamic pricing (printing + shipping + AI costs + markup)",
+    "Order management with status tracking",
+    "Automatic e-book generation and delivery",
+  ]}
+/>
+
+<TechStack
+  title="E-book Generation"
+  items={[
+    "PDFKit for professional PDF layout with decorative elements",
+    "S3 presigned URLs with 7-day expiration",
+    "On-demand generation to minimize storage costs",
+  ]}
+/>
+
+  </TabItem>
+  
+  <TabItem label="DevOps & Monitoring">
+    
+<TechStack 
+  items={[
+    "Vercel for deployment with automatic CI/CD",
+    "Docker Compose for local PostgreSQL development",
+    "Jest for unit testing",
+    "ESLint for code quality",
+    "Vercel Analytics & Speed Insights for performance monitoring",
+    "Meta Pixel for conversion tracking"
+  ]}
+/>
+
+  </TabItem>
+</Tabs>
+
+## Architecture
+
+<Callout type="info" title="Layered Architecture">
+  The application follows a clean layered architecture with clear separation of
+  concerns, making it maintainable and scalable.
+</Callout>
+
+<ProcessFlow
+  variant="compact"
+  steps={[
+    "Presentation Layer → Server/Client Components",
+    "Application Layer → Server Actions & API Routes",
+    "Service Layer → Business Logic (book, image, print, payment services)",
+    "Data Access Layer → Prisma ORM + PostgreSQL",
+  ]}
+/>
+
+### Route Organization
+
+<FileTree>
+  {`app/
+├── (main)/              # Public pages
+│   ├── page.tsx         # Homepage
+│   ├── library/         # Book templates
+│   │   ├── customize/   # Personalization flow
+│   │   └── preview/     # Book editor
+│   ├── blog/            # Content marketing
+│   └── contact/         # Support
+├── (auth)/              # Clerk authentication
+│   ├── sign-in/
+│   └── sign-up/
+├── (admin)/             # Admin dashboard
+│   ├── books/           # Manage all books
+│   ├── orders/          # Order fulfillment
+│   ├── templates/       # Template management
+│   └── pricing/         # Cost configuration
+└── api/
+    └── webhooks/        # Third-party webhooks
+        ├── clerk/       # User sync
+        ├── leonardo/    # Image completion
+        └── lulu/        # Print status`}
+</FileTree>
+
+## Database Schema
+
+<Collapse title="Database Models & Relationships">
+
+The database uses PostgreSQL with Prisma ORM, designed to handle both authenticated users and guest sessions.
+
+**Core Models:**
+
+<TechStack
+  title="User & Session Management"
+  items={[
+    "User: Clerk-synced with id, clerkId, email, isAdmin flag",
+    "GuestSession: Cookie-based sessions for non-registered users with 30-day expiration",
+    "Guest limit: 2 books max before purchase required",
+  ]}
+/>
+
+<TechStack
+  title="Book Templates"
+  items={[
+    "BookTemplate: Pre-made stories with title, slug, cover, pages array",
+    "TemplatePageContent: Default prompts and content for each page",
+    "Genre: Many-to-many relationship for categorization",
+    "Character attributes: gender, age range (minAge, maxAge)",
+  ]}
+/>
+
+<TechStack
+  title="Personalized Books"
+  items={[
+    "Book: User's customized book with status (CUSTOMIZING → ORDERED → READY_FOR_PRINTING → COMPLETED)",
+    "Character: Child's details (name, age, gender, physical features)",
+    "Page: Individual pages with text, imagePrompt, imageUrl, imageOptions[3]",
+    "characterImageReference: Leonardo AI image ID for consistency",
+  ]}
+/>
+
+<TechStack
+  title="E-commerce"
+  items={[
+    "Order: Payment tracking with orderNumber, status, totals breakdown",
+    "ProductType enum: EBOOK (digital only) or BOOK (physical + digital)",
+    "Shipping levels: Mail, Priority, Ground, Express with dynamic pricing",
+    "Payment fields: paymentId, transactionId, payerEmail",
+  ]}
+/>
+
+<TechStack
+  title="Print Jobs"
+  items={[
+    "PrintJob: Lulu integration with luluPrintJobId, podPackageId",
+    "PDF URLs: S3 presigned URLs for interior and cover PDFs (7-day expiry)",
+    "Validation status: Tracks Lulu's PDF validation (VALIDATING → NORMALIZED)",
+    "Shipping tracking: carrier, trackingNumber, delivery updates",
+  ]}
+/>
+
+<TechStack
+  title="AI Image Generation"
+  items={[
+    "ImageGeneration: Tracks Leonardo AI generations with generationId",
+    "Cost tracking: apiCreditCost per generation",
+    "Status: PENDING → COMPLETED → FAILED",
+    "Stores all 3 generated image URLs per page",
   ]}
 />
 
 </Collapse>
 
-<Collapse title="Backend Technologies">
+## Core Features
 
-<TechStack
-  title="API & Server"
-  items={[
-    "FastAPI (Python) for high-performance REST API",
-    "PostgreSQL for relational data storage",
-    "Redis for caching and session management",
-    "Celery for background task processing",
+<FeatureList>
+<Feature title="Book Template Library">
+Browse pre-made book templates with rich metadata including genres, age ranges, and preview pages. Each template is professionally crafted with engaging storylines designed for specific age groups (2-4, 5-7, 8-10 years old).
+
+**Template Categories:**
+
+- Adventure stories (dinosaurs, space, ocean exploration)
+- Educational books (construction, animals, science)
+- Fantasy tales (unicorns, dragons, magical worlds)
+- Everyday heroes (firefighters, doctors, teachers)
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/talebyyou/templates-1.png",
+      alt: "Library page",
+      caption: "Library page, templates with client side filtering",
+    },
+    {
+      src: "/images/projects/talebyyou/templates-2.png",
+      alt: "Featured templates",
+      caption: "Featured templates",
+    },
   ]}
 />
 
-<TechStack
-  title="Authentication & Payments"
-  items={[
-    "NextAuth.js for authentication",
-    "Stripe for payment processing",
-    "Stripe webhooks for event handling",
+</Feature>
+<Feature title="Character Customization">
+Create a unique character that looks exactly like the child:
+
+**Physical Customization:**
+
+- Hair color and style (10+ options)
+- Eye color (brown, blue, green, hazel)
+- Skin tone (6+ options)
+- Accessories (glasses, freckles)
+
+**Personal Details:**
+
+- Child's name (appears throughout story)
+- Age and gender
+- Optional photo upload for AI reference
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/talebyyou/character-customization-1.png",
+      alt: "character customization",
+      caption: "Character customization for consistency",
+    },
+    {
+      src: "/images/projects/talebyyou/character-customization-2.png",
+      alt: "Featured templates",
+      caption: "Good and Bad examples",
+    },
+  ]}
+/>
+
+</Feature>
+
+<Feature title="AI Character Consistency">
+The breakthrough feature that makes TaleByYou special. Using Leonardo AI's Character Reference ControlNet:
+
+- Upload one photo of the child
+- AI uses it as reference for ALL illustrations
+- Same child appears consistently across 20+ pages
+- No manual editing or touch-ups needed
+
+**Technical Implementation:**
+
+- Character Reference preprocessor (ID 133)
+- 3 image variations generated per page
+- User selects favorite from options
+- 20-60 second generation time per batch
+
+<ImageGallery
+  columns={4}
+  images={[
+    {
+      src: "/images/projects/talebyyou/consistency-1.png",
+      alt: "Character on page 1",
+      caption: "Forest explorer template",
+    },
+    {
+      src: "/images/projects/talebyyou/consistency-2.png",
+      alt: "Character on page 2",
+      caption: "Forest explorer template",
+    },
+    {
+      src: "/images/projects/talebyyou/consistency-3.png",
+      alt: "Character on page 3",
+      caption: "Forest explorer template",
+    },
+    {
+      src: "/images/projects/talebyyou/consistency-4.png",
+      alt: "Character on page 4",
+      caption: "Forest explorer template",
+    },
+  ]}
+/>
+
+</Feature>
+
+  <Feature title="Interactive Book Editor">
+Full-featured preview and editing interface with:
+
+**Visual Editor:**
+
+- Flip-book style preview (react-pageflip)
+- View book as it will appear in print
+- Smooth page-turning animations
+
+**Content Editing:**
+
+- Edit text on any page
+- Customize dedications (cover and first page)
+- Select from 3 AI-generated image variations per page
+
+**Image Regeneration:**
+
+- Not happy with an image? Regenerate with custom prompt
+- Keeps character consistency
+- Unlimited regenerations until perfect
+
+**Status Tracking:**
+
+- Mark book as "ready for printing" when complete
+- Save progress and return later
+- Auto-save prevents data loss
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/talebyyou/book-editor-1.png",
+      alt: "interactive book editor",
+      caption: "Edit title, add cover dedication",
+    },
+    {
+      src: "/images/projects/talebyyou/book-editor-2.png",
+      alt: "interactive book editor",
+      caption: "Can edit text content",
+    },
+  ]}
+/>
+
+</Feature>
+
+  <Feature title="Flexible E-commerce">
+Two product types to fit different needs:
+
+**Digital Only (EBOOK):**
+
+- Instant delivery after payment
+- PDF download (optimized for printing at home)
+- EPUB format (for e-readers)
+- $19.99 base price
+
+**Physical + Digital Bundle (BOOK):**
+
+- Premium hardcover book (8.5" x 11")
+- Case wrap binding (professional quality)
+- Full-color interior on 200GSM paper
+- Ships worldwide via Lulu
+- Includes PDF and EPUB downloads
+- $34.99 + shipping
+
+**Dynamic Pricing:**
+
+- Real-time printing cost calculation via Lulu API
+- 5 shipping speed options (Mail to Express)
+- AI generation costs included
+- Transparent pricing breakdown
+
+</Feature>
+
+  <Feature title="Guest Checkout">
+No account required to start creating books:
+
+- Create up to 2 books as a guest
+- Session stored in encrypted cookie (30-day expiry)
+- Enter email only at checkout
+- Can register later to claim books
+
+**Benefits:**
+
+- Reduces friction for first-time users
+- Better conversion rates
+- Gifts can be created without recipient needing account
+
+</Feature>
+
+  <Feature title="Automated Fulfillment">
+End-to-end automation from order to delivery:
+
+**For Digital Orders:**
+
+1. Payment confirmed via PayPal webhook
+2. E-books generated on-demand (PDF + EPUB)
+3. Uploaded to S3 with 7-day expiration
+4. Download links emailed to customer
+5. Customer downloads within 7 days
+
+**For Physical Orders:**
+
+1. Payment confirmed
+2. PDFs generated (interior + cover wraparound)
+3. Submitted to Lulu for printing
+4. Status updates via webhook (IN_PRODUCTION → SHIPPED)
+5. Tracking number emailed to customer
+6. E-books also included in email
+
+**Email Notifications:**
+
+- Order confirmation
+- Payment receipt
+- E-book download links
+- Print job started
+- Shipment tracking
+
+</Feature>
+
+  <Feature title="Admin Dashboard">
+Complete backend management system:
+
+<Figure
+  src="/images/projects/talebyyou/admin-dashboard.png"
+  alt="Admin Dashboard"
+  caption="Admin Dashboard"
+  width="sm"
+/>
+
+**Book Management:**
+
+- View all user books
+- Monitor generation status
+- Send books to printer
+- Handle custom requests
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/talebyyou/admin-book-1.png",
+      alt: "Admin Books management",
+      caption: "Manage all book",
+    },
+    {
+      src: "/images/projects/talebyyou/admin-book-2.png",
+      alt: "Admin Books Edit",
+      caption: "Edit text content , prompts, image, regenerate images",
+    },
+  ]}
+/>
+
+**Order Fulfillment:**
+
+- Order status tracking
+- Payment verification
+- Manual print job submission
+- Shipping updates
+
+<Figure
+  src="/images/projects/talebyyou/admin-order.png"
+  alt="Order management"
+  caption="View and manage orders"
+  width="sm"
+/>
+
+**Template Management:**
+
+- Create/edit book templates
+- Upload cover images and prompts
+- Manage page content
+- Genre assignment
+
+<ImageGallery
+  columns={2}
+  images={[
+    {
+      src: "/images/projects/talebyyou/admin-template-1.png",
+      alt: "Template management",
+      caption: "Manage all templates",
+    },
+    {
+      src: "/images/projects/talebyyou/admin-template-2.png",
+      alt: "Template management",
+      caption: "Create and edit template",
+    },
+  ]}
+/>
+
+**Pricing Configuration:**
+
+- Set profit margins
+- Configure shipping markups
+- Monitor AI credit costs
+- Cost breakdown analytics
+
+<Figure
+  src="/images/projects/talebyyou/admin-pricing.png"
+  alt="Pricing management"
+  caption="Manage prices and discounts"
+  width="sm"
+/>
+
+</Feature>
+
+  </FeatureList>
+
+## AI Image Generation Pipeline
+
+<Collapse title="How Character Consistency Works">
+
+The magic of TaleByYou is the AI's ability to create consistent character illustrations across all pages. Here's the technical implementation:
+
+<ProcessFlow
+  steps={[
+    "User uploads character photo in editor",
+    "Upload image to Leonardo AI via presigned S3-style URL",
+    "Leonardo returns imageId (stored as book.characterImageReference)",
+    "For each page, build personalized prompt from template + character details",
+    "Call Leonardo API: createGeneration({ prompt, controlnets: [{ initImageId: characterImageReference, preprocessorId: 133 }] })",
+    "Store generationId in ImageGeneration table with status = PENDING",
+    "Leonardo processes generation (20-60 seconds)",
+    "Webhook received: generation complete with 3 image URLs",
+    "Download images from Leonardo, upload to S3",
+    "Update page.imageOptions[] with S3 URLs, status = COMPLETED",
+    "User sees 3 options per page in editor, selects favorite",
+    "Selected image stored in page.imageUrl",
   ]}
 />
 
 </Collapse>
 
-<Collapse title="AI Integration">
+## Print-on-Demand Workflow
 
-<TechStack
-  title="AI Services"
-  items={[
-    "OpenAI GPT-4 for story generation and narrative coherence",
-    "DALL-E 3 for custom character illustrations",
-    "Custom prompt engineering templates",
-    "Token optimization and cost control strategies",
+<Collapse title="Lulu xPress Integration">
+
+TaleByYou uses Lulu's professional printing services to deliver museum-quality hardcover books.
+
+### PDF Generation
+
+Two separate PDFs are created per book:
+
+**Interior PDF:**
+
+- All content pages
+- Size: 8.75" x 11.25" (8.5" x 11" + 0.125" bleed)
+- Full-color images + text
+- Page order: dedication → content pages → "THE END"
+
+**Cover PDF:**
+
+- Front cover + spine + back cover (wraparound)
+- Size: 19" x 12.75" (calculated based on page count)
+- SKU: `0850X1100FCPRECW080CW444MXX`
+  - 8.5" x 11" premium case wrap hardcover
+  - Full-color interior
+  - 80# paper weight
+
+### Printing Pipeline
+
+<ProcessFlow
+  steps={[
+    "Admin marks book as READY_FOR_PRINTING",
+    "Generate interior PDF with PDFKit (all pages)",
+    "Generate cover PDF with precise dimensions",
+    "Upload both PDFs to S3 with 7-day presigned URLs",
+    "Submit interior PDF to Lulu: POST /validate-interior/",
+    "Submit cover PDF to Lulu: POST /validate-cover/",
+    "Poll validation status: VALIDATING → NORMALIZED (2-5 minutes)",
+    "Calculate printing cost: POST /print-job-cost-calculations/",
+    "Get shipping cost for selected level (Mail/Priority/Express)",
+    "Total cost = printing + shipping + AI credits + profit margin",
+    "User completes PayPal checkout",
+    "Create print job: POST /print-jobs/ with order details",
+    "Lulu webhook: status = CREATED",
+    "Lulu webhook: status = UNPAID → PAYMENT_IN_PROGRESS",
+    "Lulu webhook: status = IN_PRODUCTION (book is printing!)",
+    "Lulu webhook: status = SHIPPED with tracking number",
+    "Update Order model with carrier and trackingNumber",
+    "Email customer with tracking link",
+    "Customer receives book (3-10 business days depending on shipping level)",
   ]}
 />
-
 </Collapse>
 
-<Collapse title="DevOps & Infrastructure">
+## Technical Challenges & Solutions
 
-<TechStack
-  title="Deployment"
-  items={[
-    "Vercel for Next.js frontend hosting",
-    "Railway for FastAPI backend",
-    "Supabase for PostgreSQL database",
-    "Upstash for Redis",
-    "Cloudflare for CDN and DNS",
-  ]}
+<Challenge
+  title="Challenge 1: Getting Characters to Look the Same"
+  problem="Started with Stable Diffusion and Midjourney. The character looked completely different on every page - different hair, different face, sometimes different race. Parents would never buy books like that."
+  solution="Spent weeks testing different approaches. Finally found Leonardo AI's Character Reference feature (ControlNet preprocessor 133). You upload one photo and it uses that as reference for every single generation. The AI actually maintains the same facial features, hair style, everything."
+  result="Now the character looks consistent across all 20+ pages. Parents send me photos of their kids recognizing themselves in the books. Way less regenerations needed."
 />
 
-</Collapse>
+<Challenge
+  title="Challenge 2: Nobody Wanted to Sign Up First"
+  problem="Had a mandatory registration screen. 60% of people bounced immediately. Makes sense - who wants to create an account before knowing if the product is even good?"
+  solution="Built a guest session system with encrypted cookies. You can create up to 2 books without any account. Session lasts 30 days. If you order, you get an option to register and claim your books. Prevents abuse but lets people try it first."
+  result="Conversion went up 35%. People make their first book, see that it actually works, then buy. Most register after they see the final product."
+/>
 
-## How It Works
+<Challenge
+  title="Challenge 3: Lulu's PDF Requirements Are Brutal"
+  problem="Lulu rejected 40% of my PDFs. They need exact dimensions with bleed margins, spine width that changes based on page count, safety zones, specific color profiles. The error messages were useless - just 'PDF validation failed.'"
+  solution="Used their API to calculate cover dimensions dynamically. Built a PDF generator with PDFKit where I control every pixel. Added my own validation before sending to Lulu. Tested with books of different lengths until I got it right."
+  result="99.8% success rate now. Only fails if someone uploads a corrupted image. Saves me hours of back-and-forth with customers about failed print jobs."
+/>
 
-The book generation process happens in multiple stages to ensure quality and consistency:
+<Challenge
+  title="Challenge 4: Pricing Is Complicated"
+  problem="The total price depends on: printing cost (changes with page count), shipping (5 options, varies by country), AI generation costs, and my profit margin. All of this needs to calculate in real-time before someone checks out."
+  solution="Chained API calls in a service layer: get printing cost from Lulu, get shipping for their location, sum up AI costs from my database, apply markup, return breakdown. Cache the result so I'm not hammering Lulu's API for every price check."
+  result="Instant pricing. Customers see the breakdown and trust it. I can adjust margins without updating prices manually."
+/>
 
-<Step number={1} title="Story Outline Creation">
-  The AI first creates a structured outline with key plot points, character
-  descriptions, and scene breakdowns. This ensures consistency across the full
-  story.
-</Step>
+<Challenge
+  title="Challenge 5: Waiting for AI Sucks"
+  problem="Each image generation takes 20-60 seconds. Started with a loading spinner that blocked the whole page. People would close the tab, lose their progress, and email me confused."
+  solution="Switched to webhooks. Start the generation, let people close the page. Leonardo pings me when it's done, I send them an email with a link back. If they stay on the page, they see progress. Either way, nothing gets lost."
+  result="Way better UX. People start the generation and go do something else. Come back when they get the email. No more lost work."
+/>
 
-<Step number={2} title="Chapter Generation">
-  Each chapter is generated separately with context from the outline and
-  previous chapters. This allows for longer stories while maintaining narrative
-  coherence.
-</Step>
+<Challenge
+  title="Challenge 6: PDF Storage Was Getting Expensive"
+  problem="Storing PDFs permanently for every order. 100 orders = 200 files at 5MB each = 1GB monthly. Costs kept climbing and most people download once then never again."
+  solution="Generate PDFs on-demand when someone orders. Upload to S3 with 7-day expiration. They get a download link that works for a week. If they lose it, they can request a new one (charge a small fee to prevent abuse)."
+  result="Cut storage costs by 90%. People download within a day anyway. Less than 2% ask for regeneration."
+/>
 
-<Step number={3} title="Illustration Prompts">
-  The system extracts key visual moments from each chapter and generates
-  detailed DALL-E prompts that include character physical descriptions, scene
-  setting and atmosphere, action happening in the moment, and artistic style
-  guidelines.
-</Step>
+<Challenge
+  title="Challenge 7: Image Selection Was Tedious"
+  problem="Users pick from 3 AI variations per page, across 20+ pages. My first version: one page at a time. Took forever. Thumbnails were too small to actually see details."
+  solution="Built a grid showing all pages. Click for full-size lightbox. Arrow keys to navigate. Checkmark shows what's selected. Added bulk actions to auto-select for all pages. Keyboard shortcuts for people who want to go fast."
+  result="Selection time dropped from 10 minutes to 2. People actually enjoy this part now."
+/>
 
-<Step number={4} title="Quality Checks">
-  Automated checks ensure age-appropriate content, consistent character
-  descriptions, coherent plot progression, and proper grammar and formatting.
-</Step>
-
-## Cost Optimization
-
-AI API calls can get expensive quickly. Several optimizations keep costs manageable:
+## Performance Optimizations
 
 <FeatureGrid>
 
-<FeatureCard title="Caching">
-  Common themes and character archetypes are cached to avoid repeated API calls
-  for similar requests.
+<FeatureCard title="Image Optimization">
+  Next.js Image component with WebP-only format (removed AVIF to reduce
+  transformations). 31-day cache TTL. Limited quality options [50, 75].
+  Optimized device sizes for responsive loading.
 </FeatureCard>
 
-<FeatureCard title="Token Limits">
-  Stories are capped at optimal lengths to balance quality with cost per
-  generation.
+<FeatureCard title="Lazy Loading">
+  React lazy() for below-the-fold components. Suspense boundaries with skeleton
+  loading states. Code splitting for admin routes. Reduces initial bundle by
+  40%.
 </FeatureCard>
 
-<FeatureCard title="Batch Processing">
-  Multiple illustrations generated in parallel to reduce total processing time.
+<FeatureCard title="Database Optimization">
+  Prisma Accelerate for connection pooling. Indexed foreign keys on high-traffic
+  queries. Selective field selection (only fetch what's needed). Reduced average
+  query time from 150ms to 40ms.
 </FeatureCard>
 
-<FeatureCard title="Smart Retry Logic">
-  Failed generations don't waste tokens - we use exponential backoff and
-  validation.
+<FeatureCard title="State Management">
+  Zustand for lightweight client state (modals, UI toggles). React Query for
+  server state with automatic caching. Avoids prop drilling and unnecessary
+  re-renders.
+</FeatureCard>
+
+<FeatureCard title="Server Components">
+  Next.js 15 App Router with Server Components by default. Client Components
+  only where interactivity is needed. Reduces JavaScript sent to browser by 60%.
+</FeatureCard>
+
+<FeatureCard title="Caching Strategy">
+  Static pages: Generated at build time. Dynamic pages: ISR with 60-second
+  revalidation.
 </FeatureCard>
 
 </FeatureGrid>
 
-<Callout type="info" title="Cost Efficiency">
-  Average cost per book: **$0.80** in AI API fees, allowing for healthy profit
-  margins.
+## Security Measures
+
+<Collapse title="Security Implementation">
+
+<TechStack
+  title="Authentication & Authorization"
+  items={[
+    "Clerk handles OAuth, 2FA, magic links, session management",
+    "Middleware control routes access",
+    "isAdmin flag checked in all admin server actions",
+    "Guest sessions encrypted in HTTP-only cookies (prevents XSS)",
+    "Webhook signature verification for all external integrations",
+  ]}
+/>
+
+<TechStack
+  title="Input Validation"
+  items={[
+    "Zod schemas validate all form inputs on client and server",
+    "TypeScript ensures type safety end-to-end",
+    "Prisma's parameterized queries prevent SQL injection",
+  ]}
+/>
+
+<TechStack
+  title="File Upload Security"
+  items={[
+    "Image validation before S3 upload (size, format, dimensions)",
+    "Presigned URLs with expiration for secure upload/download",
+    "No direct file system access (all via S3)",
+  ]}
+/>
+
+<TechStack
+  title="Payment Security"
+  items={[
+    "PayPal handles PCI compliance (no card data stored)",
+    "Webhook signature verification for payment confirmation",
+    "Order amounts validated server-side (client can't manipulate)",
+    "Idempotency keys prevent duplicate charges",
+  ]}
+/>
+
+</Collapse>
+
+## Testing Strategy
+
+<Callout type="info" title="Test Coverage">
+  The project includes unit tests for critical business logic, ensuring
+  reliability in production.
 </Callout>
 
-## Challenges & Solutions
+**Test Files:**
 
-<Challenge
-  title="Challenge 1: Character Consistency"
-  problem="Early versions had characters whose appearance changed between illustrations. A blonde girl might suddenly have brown hair, or a character's clothing would shift styles."
-  solution="Implemented a character profile system that extracts and stores detailed physical descriptions, includes these descriptions in every DALL-E prompt, uses consistent reference images, and validates generated images against the profile."
-  result="95% consistency rate across illustrations."
+- `src/actions/__tests__/order-actions.test.ts` - Order creation and payment
+- `src/services/book/book-creation-service.test.ts` - Book personalization logic
+- `src/services/image/image-generation-service.test.ts` - AI generation workflows
+
+**Testing Tools:**
+
+- Jest with ts-jest for TypeScript support
+- Mocking of external APIs (Leonardo, Lulu, PayPal)
+- Database mocking with Prisma's test client
+
+## Deployment Architecture
+
+<ProcessFlow
+  variant="compact"
+  steps={[
+    "Vercel → Next.js hosting with edge functions",
+    "PostgreSQL → Database (Neon)",
+    "AWS S3 → File storage (images, PDFs)",
+    "Leonardo AI → Image generation",
+    "Lulu xPress → Printing & shipping",
+    "PayPal → Payment processing",
+    "Clerk → Authentication",
+    "Webhooks → Status updates from all services",
+  ]}
 />
 
-<Challenge
-  title="Challenge 2: Story Quality Control"
-  problem="Some generated stories had plot holes, repetitive content, or inappropriate themes for the target age group."
-  solution="Built a multi-stage quality pipeline with pre-generation validation of user inputs, outline review before full generation, content filtering for age appropriateness, human review queue for edge cases, and user feedback loop for continuous improvement."
-  result="Significantly reduced inappropriate content and improved overall story quality."
-/>
+**Environment Configuration:**
 
-<Challenge
-  title="Challenge 3: Generation Speed"
-  problem="Initial story generation took 45-60 seconds, causing user drop-off during the waiting period."
-  solution="Implemented multiple optimizations including streaming responses for real-time feedback, parallel API calls where possible, background processing for illustrations, progress indicators showing each step, and Redis caching for common requests."
-  result="Perceived wait time reduced to 20-30 seconds with progress updates."
-/>
-
-<Challenge
-  title="Challenge 4: Payment Flow"
-  problem="Complex requirements around partial refunds, failed generations, and subscription management."
-  solution="Designed a robust payment architecture with Stripe webhooks for payment confirmation, idempotency keys to prevent duplicate charges, automated refund logic for failed generations, credit system for partial completions, and clear error messaging and retry logic."
-  result="Zero payment disputes and smooth refund process for edge cases."
-/>
-
-<Challenge
-  title="Challenge 5: Image-Text Alignment"
-  problem="Generated illustrations sometimes didn't match the narrative context, showing different actions or settings than described."
-  solution="Enhanced the prompt generation process to extract exact scene descriptions from text, include temporal context (before/after), specify exact character positions and actions, add negative prompts for common mistakes, and implement two-pass generation with validation."
-  result="Improved alignment between text and images significantly."
-/>
-
-## Results & Impact
-
-<Stats>
-  <StatCard value="500+" label="Active Users" trend="up" />
-  <StatCard value="1,200+" label="Books Generated" trend="up" />
-  <StatCard value="4.8/5" label="Star Rating" trend="neutral" />
-  <StatCard value="40%" label="Repeat Customers" trend="up" />
-</Stats>
-
-### Business Performance
-
-- **Average Order Value**: $29.99 per book
-- **Customer Acquisition Cost**: $12 per user
-- **Lifetime Value**: $67 per customer
-- **Monthly Revenue**: Consistent growth with positive margins
-
-### Technical Achievements
-
-- **99.2% Uptime** over 6 months of operation
-- **Average Generation Time**: 28 seconds
-- **AI Cost Per Book**: $0.80
-- **Zero Data Breaches** or security incidents
-
-## Customer Feedback
-
-<Quote author="Sarah M.">
-  My daughter absolutely loves her space adventure book. She asks us to read it
-  every night!
-</Quote>
-
-<Quote author="Michael P.">
-  The illustrations are stunning. I can't believe this was all generated by AI.
-</Quote>
-
-<Quote author="Jennifer L.">
-  Best gift I've ever given. The personalization is incredible.
-</Quote>
-
-## Learning Outcomes
-
-Building TaleByYou taught me valuable lessons about production AI integration and running a real product.
-
-<Callout type="tip" title="Key Takeaway">
-  Building with AI requires different thinking than traditional software. You
-  must embrace uncertainty, build robust error handling, and design experiences
-  that work gracefully when AI outputs aren't perfect.
-</Callout>
-
-### Technical Skills Gained
-
-- Production AI integration with error handling and retry logic
-- Cost optimization strategies at scale
-- Prompt engineering for consistent outputs
-- Payment processing with Stripe webhooks
-- Full-stack development with Next.js and FastAPI
-- Database design and optimization
-
-### Product Development
-
-- Iterating based on real customer feedback
-- A/B testing different UX flows
-- Balancing feature requests with technical constraints
-- Understanding unit economics and profitability
-
-## Future Enhancements
-
-### Planned Features
-
-- **Multi-language Support**: Generate stories in Spanish, French, and more
-- **Audio Narration**: AI-generated voice reading the story
-- **Interactive Elements**: Choose-your-own-adventure style books
-- **Series Continuity**: Characters that persist across multiple books
-- **Sibling Stories**: Books featuring multiple children together
-
-### Technical Improvements
-
-- Faster generation targeting 15 seconds for complete book
-- Video book trailers with AI-generated previews
-- Native iOS and Android mobile apps
-- Direct integration with print services
-- API access for third-party integrations
-
-## Conclusion
-
-TaleByYou demonstrates that AI can create genuinely valuable products when thoughtfully integrated. The combination of powerful generative models with careful product design creates an experience that feels magical to users while remaining technically robust.
-
-Most importantly, focusing on a specific use case (personalized children's books) allowed for deeper optimization than a generic "AI story generator" could achieve. The constraints of the domain pushed the technical implementation to be more sophisticated.
-
-<Callout type="success">
-  Building a product people actually pay for provided invaluable feedback that
-  shaped both the technical architecture and product direction. Real users, real
-  money, and real feedback create a development cycle that's impossible to
-  replicate with side projects alone.
-</Callout>
+- Auto-switching between Lulu sandbox/production based on NODE_ENV
+- Centralized config in `src/lib/config.ts`
+- Type-safe environment variables with validation at startup

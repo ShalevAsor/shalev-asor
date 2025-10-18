@@ -1,7 +1,6 @@
 import { projects } from "#site/content";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import {
   FaGithub,
   FaExternalLinkAlt,
@@ -13,6 +12,7 @@ import type { Metadata } from "next";
 import ProjectsIndex from "@/components/projects/ProjectsIndex";
 import TableOfContents from "@/components/projects/TableOfContent";
 import { MDXContent } from "@/components/mdx/MDXContent";
+import { Figure } from "@/components/mdx/MDXComponents";
 
 interface ProjectPageProps {
   params: Promise<{
@@ -68,8 +68,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Get all published projects for the index
   const publishedProjects = projects
-    .filter((p) => p.published)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .filter((project) => project.published)
+    .sort((a, b) => {
+      // First, sort by featured (featured items come first)
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+
+      // If both have the same featured status, sort by date (newest first)
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -162,17 +169,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             {/* Project Image */}
             {project.image ? (
-              <div className="relative w-full h-[400px] rounded-lg overflow-hidden mb-8 bg-muted">
-                <Image
-                  src={project.image.src}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  priority
-                  placeholder="blur"
-                  blurDataURL={project.image.blurDataURL}
-                />
-              </div>
+              <Figure
+                src={project.image.src}
+                alt={project.title}
+                caption={project.title}
+              />
             ) : (
               <div className="relative w-full h-[400px] rounded-lg overflow-hidden mb-8 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                 <span className="text-9xl font-bold text-primary/30">
