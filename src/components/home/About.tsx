@@ -109,10 +109,14 @@ export default function About() {
               "Node.js",
               "FastAPI",
               "PostgreSQL",
-              "Prisma ORM",
+              "MongoDB",
+              "Prisma",
+              "Tailwind CSS",
               "Docker",
-              "CI/CD",
-              "AWS",
+              "Git",
+              "AWS S3",
+              "Redis",
+              "WebSocket",
             ].map((tech, index) => (
               <span
                 key={index}
