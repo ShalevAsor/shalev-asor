@@ -2,6 +2,8 @@
 
 My personal portfolio built with Next.js, showcasing my projects and skills.
 
+**Live:** [shalevasor.dev](https://shalevasor.dev)
+
 ## Tech Stack
 
 - **Next.js 15** - App Router with Server Components
