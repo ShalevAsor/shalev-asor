@@ -68,33 +68,31 @@ export default function FeaturedProject({ project }: FeaturedProjectProps) {
 
         {/* External Links - GitHub and Demo */}
 
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {project.github && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors text-sm"
-                onClick={(e) => e.stopPropagation()} // Prevent any parent click handlers
-              >
-                <FaGithub className="h-4 w-4" />
-                <span>Code</span>
-              </a>
-            )}
-            {project.demo && (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm"
-                onClick={(e) => e.stopPropagation()} // Prevent any parent click handlers
-              >
-                <FaGlobe className="h-4 w-4" />
-                <span>Live</span>
-              </a>
-            )}
-          </div>
+        <div className="flex items-center gap-3 mb-4 mt-auto">
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors text-sm"
+              onClick={(e) => e.stopPropagation()} // Prevent any parent click handlers
+            >
+              <FaGithub className="h-4 w-4" />
+              <span>Code</span>
+            </a>
+          )}
+          {project.demo && (
+            <a
+              href={project.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm"
+              onClick={(e) => e.stopPropagation()} // Prevent any parent click handlers
+            >
+              <FaGlobe className="h-4 w-4" />
+              <span>Live</span>
+            </a>
+          )}
           <Link
             href={`/projects/${project.slug}`}
             className="flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors text-sm"

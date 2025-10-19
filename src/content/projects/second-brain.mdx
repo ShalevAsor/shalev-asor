@@ -19,7 +19,7 @@ tags:
     "clerk",
   ]
 github: "https://github.com/ShalevAsor/second-brain"
-demo: "https://second-brain-inky-two.vercel.app"
+demo: "https://second-brain-stem.vercel.app"
 image: ../../../public/images/projects/second-brain/main.png
 ---
 
@@ -30,9 +30,9 @@ I built this because I was tired of losing my notes across random text files and
 The main idea: paste anything, and AI figures out where it should go and what tags make sense. No more "misc notes" folder with 500 files.
 
 <Callout type="success" title="What It Does">
-  - Paste random content → AI organizes it automatically
-  - Search by meaning, not just keywords
-  - Rich text editor with code blocks, LaTeX math, syntax highlighting
+  - Paste random content → AI organizes it automatically - Search by meaning,
+  not just keywords - Rich text editor with code blocks, LaTeX math, syntax
+  highlighting
 </Callout>
 
 Built it mainly for CS students, bootcamp people, and anyone learning to code who's drowning in notes.
@@ -222,7 +222,9 @@ model Note {
 ```
 
 <Callout type="info" title="Lazy Embeddings">
-  Only generate embeddings **when you actually search** and **only for notes that changed**. This cuts API costs by 90% and doesn't slow down note creation at all.
+  Only generate embeddings **when you actually search** and **only for notes
+  that changed**. This cuts API costs by 90% and doesn't slow down note creation
+  at all.
 </Callout>
 
 **Folder rules:**
@@ -503,11 +505,9 @@ AI suggests: "Algorithms/Sorting" ✅
 The search uses "lazy embeddings" - basically I don't generate them until you actually search for something.
 
 <Callout type="success" title="Why This Approach?">
-  - Creating notes is instant (no embedding generation)
-  - First search takes 2-3 seconds (has to generate for all notes)
-  - Every search after that is 300ms
-  - Saves a ton of money on API calls
-  - Only regenerates for notes you've edited
+  - Creating notes is instant (no embedding generation) - First search takes 2-3
+  seconds (has to generate for all notes) - Every search after that is 300ms -
+  Saves a ton of money on API calls - Only regenerates for notes you've edited
 </Callout>
 
 ### Embedding Freshness Logic

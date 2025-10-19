@@ -19,10 +19,9 @@ I wanted to build something to help me study distributed systems for interviews.
 The simulation engine is probably the most complex code I've written - 1595 lines of logic that models realistic distributed system behavior. Each component has dozens of properties that actually affect performance.
 
 <Callout type="success" title="What It Does">
-  - Drag and drop system components onto a canvas
-  - Configure 80+ properties per component (CPU, memory, protocols, etc.)
-  - Run simulations that show you where bottlenecks are
-  - 6 pre-built architecture templates to start from
+  - Drag and drop system components onto a canvas - Configure 80+ properties per
+  component (CPU, memory, protocols, etc.) - Run simulations that show you where
+  bottlenecks are - 6 pre-built architecture templates to start from
 </Callout>
 
 Built it mainly for studying, but it's useful for anyone learning distributed systems or designing architectures.
@@ -364,7 +363,7 @@ Built it mainly for studying, but it's useful for anyone learning distributed sy
   </Feature>
 </FeatureList>
 
-## The Beast: Simulation Engine
+## Simulation Engine
 
 <Collapse title="Request Processor Deep Dive">
 
@@ -497,76 +496,6 @@ Four different algorithms, each with unique behavior:
 The result? A simulation that feels real. When you add a load balancer, performance actually improves. When you add cache, database load decreases. When you overload a server, it starts dropping requests.
 
 </Collapse>
-
-## Authentication Flow
-
-<UserFlowGrouped
-  title="Complete Auth Journey"
-  phases={[
-    {
-      title: "Registration",
-      icon: "📝",
-      steps: [
-        "User enters email and password",
-        "Frontend validates with Zod schema",
-        "POST /api/auth/register sent to backend",
-        "Backend validates with express-validator",
-        "Check if email already exists in database",
-        "Hash password with bcrypt (10 salt rounds)",
-        "Generate 32-byte verification token",
-        "Hash token with SHA-256 for storage",
-        "Save user to MongoDB",
-        "Send verification email with raw token",
-        "Return success response",
-      ],
-    },
-    {
-      title: "Email Verification",
-      icon: "✉️",
-      steps: [
-        "User clicks verification link in email",
-        "GET /api/auth/verify-email?token=xxx",
-        "Backend hashes incoming token with SHA-256",
-        "Query database for matching hash",
-        "Check if token expired (24h limit)",
-        "Mark user email as verified",
-        "Clear verification token from database",
-        "Send welcome email",
-        "Redirect to login page",
-      ],
-    },
-    {
-      title: "Login",
-      icon: "🔓",
-      steps: [
-        "User enters email and password",
-        "POST /api/auth/login",
-        "Find user by email",
-        "Compare password with bcrypt",
-        "Check if email is verified",
-        "Generate JWT token (1h expiration)",
-        "Return user data + token",
-        "Frontend stores token in localStorage",
-        "Axios interceptor adds token to future requests",
-        "Navigate to flow library",
-      ],
-    },
-    {
-      title: "Protected Requests",
-      icon: "🛡️",
-      steps: [
-        "User tries to access protected route",
-        "Request sent with Authorization: Bearer <token>",
-        "tokenExtractor middleware parses header",
-        "userExtractor middleware verifies JWT",
-        "Query User model by decoded ID",
-        "Inject user into req.user",
-        "Controller accesses authenticated user",
-        "Return user-specific data",
-      ],
-    },
-  ]}
-/>
 
 ## Simulation Workflow
 
