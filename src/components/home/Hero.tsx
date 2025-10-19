@@ -33,14 +33,15 @@ export default function Hero() {
             <TypewriterEffect />
 
             {/* Description */}
+
             <p className="text-muted-foreground text-xl mb-8 max-w-lg">
-              I&apos;m a software developer based in Israel with an interest in
-              web development. This website showcases my projects, skills, and
+              I&apos;m a Full-stack developer building production apps with real
+              users. This website showcases my projects, skills, and
               experiences.
             </p>
 
             {/* Social buttons and resume */}
-            <div className="flex justify-between">
+            <div className="flex flex-wrap gap-3 justify-between items-center mb-6">
               {/* social icons */}
               <div className="flex gap-3">
                 <Link
@@ -74,16 +75,25 @@ export default function Hero() {
                 Resume
               </Link>
             </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/projects"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-md hover:bg-primary/90 transition-colors text-primary-foreground font-medium"
+              >
+                <span className="text-lg">View Projects</span>
+              </Link>
+              <button
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-secondary rounded-md hover:bg-secondary/80 transition-colors cursor-pointer font-medium"
+                onClick={scrollToAbout}
+              >
+                <span className="text-lg">Learn More</span>
+                <FaArrowDown className="h-5 w-5 animate-bounce" />
+              </button>
+            </div>
           </div>
         </div>
-        {/* Scroll down button */}
-        <button
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-primary rounded-md hover:bg-primary/90 transition-colors cursor-pointer text-primary-foreground"
-          onClick={scrollToAbout}
-        >
-          <span className="text-xl">Learn More</span>
-          <FaArrowDown className="h-6 w-6 animate-bounce " />
-        </button>
       </div>
     </section>
   );
