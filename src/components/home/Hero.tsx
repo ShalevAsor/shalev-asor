@@ -12,11 +12,11 @@ export default function Hero() {
     aboutSection?.scrollIntoView({ behavior: "smooth" });
   };
   return (
-    <section className="relative z-10 h-screen">
+    <section className="relative z-10 min-h-screen">
       {/* Grid background ONLY for hero */}
       <div className="absolute inset-0 grid-background pointer-events-none" />
 
-      <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
+      <div className="container mx-auto px-4 min-h-screen flex flex-col items-center justify-center relative z-10 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center max-w-6xl w-full">
           {/* Left side - Image */}
           <div className="slide-in-left">

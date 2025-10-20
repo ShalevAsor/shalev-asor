@@ -5,7 +5,6 @@ import {
   FaRocket,
   FaGraduationCap,
   FaLaptopCode,
-  FaArrowRight,
 } from "react-icons/fa";
 
 export default function About() {
